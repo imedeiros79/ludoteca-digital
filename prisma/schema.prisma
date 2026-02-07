@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  name           String?
+  image          String?
+  stripeCustomerId String?
+  subscriptionStatus String?   @default("inactive") // active, inactive, past_due
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  bncc        String?
+  year        String?  // Ano escolar
+  subject     String?  // Matéria
+  gameUrl     String   // URL do CloudFront
+  imageUrl    String?  // Thumbnail
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("items")
+}
+
+model Subscription {
+  id              String   @id @default(uuid())
+  userId          String
+  stripeId        String
+  status          String
+  priceId         String
+  currentPeriodEnd DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
