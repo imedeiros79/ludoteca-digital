@@ -155,7 +155,12 @@ export default async function Dashboard({
                             {dbUser?.email?.[0].toUpperCase()}
                         </div>
                     </div>
-                    <SignOutButton />
+                    <div className="flex items-center gap-3">
+                        <Link href="/dashboard/profile" className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                            <Settings size={16} /> <span className="hidden sm:inline">Minha Conta</span>
+                        </Link>
+                        <SignOutButton />
+                    </div>
                 </div>
             </nav>
 
