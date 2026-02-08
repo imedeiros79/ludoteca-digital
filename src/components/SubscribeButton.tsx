@@ -14,47 +14,18 @@ interface SubscribeButtonProps {
 export default function SubscribeButton({ priceId, children, className }: SubscribeButtonProps) {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const supabase = createClient();
 
-    const handleCheckout = async () => {
+    const handleSubscribe = () => {
         setLoading(true);
-
-        // Verificar se está logado
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            // Salvar intenção de compra? Por enquanto só login.
-            router.push('/login?next=checkout'); // Poderíamos melhorar isso
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ priceId }),
-            });
-
-            const { url } = await response.json();
-
-            if (url) {
-                window.location.href = url;
-            } else {
-                throw new Error('URL de checkout não encontrada');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Erro ao iniciar pagamento. Tente novamente.');
-        } finally {
-            setLoading(false);
-        }
+        // Redireciona para a página intermediária de checkout
+        // O Middleware ou a própria página vai cuidar de verificar o login
+        // e redirecionar de volta para cá (preservando a intenção de compra)
+        router.push(`/checkout?priceId=${priceId}`);
     };
 
     return (
         <button
-            onClick={handleCheckout}
+            onClick={handleSubscribe}
             disabled={loading}
             className={className}
         >

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Gamepad2, Loader2, Mail, Lock, ArrowRight } from 'lucide-react'
 
@@ -14,6 +14,8 @@ export default function LoginPage() {
     const [view, setView] = useState<'signin' | 'signup'>('signin')
     const router = useRouter()
     const supabase = createClient()
+    const searchParams = useSearchParams()
+    const next = searchParams.get('next')
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -26,18 +28,26 @@ export default function LoginPage() {
                     email,
                     password,
                     options: {
-                        emailRedirectTo: `${location.origin}/auth/callback`,
+                        emailRedirectTo: `${location.origin}/auth/callback?next=${next || '/dashboard'}`,
                     },
                 })
                 if (error) throw error
-                alert('Cadastro realizado! Verifique seu email para confirmar.')
+                // Para simplificar, vamos avisar para verificar o email. 
+                // Idealmente, poderíamos auto-logar se a config do Supabase permitisse 'Enable email confirmations' OFF
+                alert('Cadastro realizado! Se necessário, verifique seu email.')
+                // Tenta logar automaticamente caso a confirmação de email esteja desligada
+                const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+                if (!signInError) {
+                    router.push(next || '/dashboard')
+                    router.refresh()
+                }
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
                 })
                 if (error) throw error
-                router.push('/dashboard')
+                router.push(next || '/dashboard')
                 router.refresh()
             }
         } catch (err: any) {

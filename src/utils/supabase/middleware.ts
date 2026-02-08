@@ -10,7 +10,8 @@ export async function updateSession(request: NextRequest) {
     if (
         request.nextUrl.pathname.startsWith('/dashboard') ||
         request.nextUrl.pathname.startsWith('/jogar') ||
-        request.nextUrl.pathname.startsWith('/content')
+        request.nextUrl.pathname.startsWith('/content') ||
+        request.nextUrl.pathname.startsWith('/checkout')
     ) {
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,

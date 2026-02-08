@@ -53,7 +53,7 @@ class AsaasService {
     // Buscar ou criar cliente
     async getOrCreateCustomer(email: string, name: string): Promise<string> {
         // Tentar buscar por email
-        const customers = await this.request(`/customers?email=${email}`);
+        const customers = await this.request(`/customers?email=${encodeURIComponent(email)}`);
         if (customers.data && customers.data.length > 0) {
             return customers.data[0].id;
         }
