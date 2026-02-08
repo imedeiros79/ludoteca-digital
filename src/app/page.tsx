@@ -153,7 +153,7 @@ export default async function Home() {
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Cancele quando quiser</li>
               </ul>
               <SubscribeButton
-                priceId={process.env.STRIPE_PRICE_ID_MENSAL || ''}
+                priceId="MENSAL"
                 className="w-full py-4 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-semibold transition-colors flex items-center justify-center"
               >
                 Assinar Mensal
@@ -179,10 +179,10 @@ export default async function Home() {
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-amber-400" /> Acesso antecipado a novidades</li>
               </ul>
               <SubscribeButton
-                priceId={process.env.STRIPE_PRICE_ID_ANUAL || ''}
-                className="w-full py-4 bg-white text-purple-900 hover:bg-gray-100 rounded-xl font-bold transition-colors shadow-lg flex items-center justify-center"
+                priceId="ANUAL"
+                className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-colors flex items-center justify-center p-4 shadow-xl"
               >
-                Assinar Anual
+                Assinar Anual (Melhor Oferta)
               </SubscribeButton>
             </div>
           </div>

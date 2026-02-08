@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { createClient } from '@/utils/supabase/server';
 import prisma from '@/lib/prisma';
+import { asaas } from '@/lib/asaas';
 
 export const dynamic = 'force-dynamic';
-
-function getStripe() {
-    return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-        apiVersion: '2026-01-28.clover',
-    });
-}
 
 export async function POST(req: Request) {
     try {
@@ -17,38 +11,46 @@ export async function POST(req: Request) {
 
         const supabase = await createClient();
         const {
-            data: { user },
+            data: { user: authUser },
         } = await supabase.auth.getUser();
 
-        if (!user) {
+        if (!authUser) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Buscar ou criar customer no Stripe (opcional, mas bom pra rastreio)
-        // Para simplificar MVP, vamos deixar o Stripe criar um novo ou usar email se bater.
-        // Mas para webhook funcionar bem com nosso user, passamos metadata.
+        // Definir valores baseado no priceId (que agora pode ser apenas 'MENSAL' ou 'ANUAL')
+        const isAnnual = priceId === 'ANUAL';
+        const value = isAnnual ? 120.00 : 19.90;
+        const cycle = isAnnual ? 'ANNUALLY' : 'MONTHLY';
 
-        const stripe = getStripe();
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card', 'boleto'],
-            line_items: [
-                {
-                    price: priceId,
-                    quantity: 1,
-                },
-            ],
-            mode: 'subscription',
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard?success=true`,
-            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/?canceled=true`,
-            customer_email: user.email,
-            metadata: {
-                userId: user.id,
-            },
+        // 1. Obter ou Criar Cliente no Asaas
+        const customerId = await asaas.getOrCreateCustomer(authUser.email!, authUser.email!.split('@')[0]);
+
+        // 2. Criar Assinatura no Asaas (UNDEFINED permite ao usuário escolher no checkout: PIX, Boleto ou Cartão)
+        const date = new Date();
+        date.setDate(date.getDate() + 1); // Vencimento para amanhã
+        const nextDueDate = date.toISOString().split('T')[0];
+
+        const subscription = await asaas.createSubscription({
+            customer: customerId,
+            billingType: 'UNDEFINED',
+            value: value,
+            nextDueDate: nextDueDate,
+            cycle: cycle,
         });
 
-        return NextResponse.json({ sessionId: session.id, url: session.url });
+        // 3. Salvar o customerId no banco para futuras consultas e webhooks
+        await prisma.user.update({
+            where: { email: authUser.email! },
+            data: { stripeCustomerId: customerId } // Reutilizando o campo stripeCustomerId por enquanto para evitar migração de schema
+        });
+
+        return NextResponse.json({
+            id: subscription.id,
+            url: subscription.invoiceUrl // O Asaas retorna um link de checkout/fatura
+        });
     } catch (err) {
-        console.error(err);
+        console.error('Asaas Checkout Error:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
