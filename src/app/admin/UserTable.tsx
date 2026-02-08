@@ -12,15 +12,33 @@ interface User {
     email: string | null;
     name: string | null;
     subscriptionStatus: string | null;
+    cpfCnpj: string | null;
+    phone: string | null;
     createdAt: Date;
 }
 
 export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
     const [search, setSearch] = useState('');
 
+    const formatCPF = (cpf: string | null) => {
+        if (!cpf) return '-';
+        const cleaned = cpf.replace(/\D/g, '');
+        if (cleaned.length !== 11) return cpf;
+        return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    }
+
+    const formatPhone = (phone: string | null) => {
+        if (!phone) return '-';
+        const cleaned = phone.replace(/\D/g, '');
+        if (cleaned.length !== 11) return phone;
+        return cleaned.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    }
+
     const filteredUsers = initialUsers.filter(user =>
         user.email?.toLowerCase().includes(search.toLowerCase()) ||
-        user.name?.toLowerCase().includes(search.toLowerCase())
+        user.name?.toLowerCase().includes(search.toLowerCase()) ||
+        user.cpfCnpj?.includes(search.replace(/\D/g, '')) ||
+        user.phone?.includes(search.replace(/\D/g, ''))
     );
 
     async function handleDelete(id: string, email: string) {
@@ -42,7 +60,7 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Buscar por e-mail ou nome..."
+                        placeholder="Buscar por e-mail, nome ou CPF..."
                         className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all shadow-sm"
                     />
                 </div>
@@ -53,16 +71,17 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                     <thead>
                         <tr className="text-gray-400 text-[10px] uppercase tracking-[0.2em] font-black border-b border-gray-50">
                             <th className="px-10 py-6 text-center w-16">#</th>
-                            <th className="px-10 py-6">Identificação do Usuário</th>
-                            <th className="px-10 py-6 text-center">Acesso VIP</th>
-                            <th className="px-10 py-6">Data de Cadastro</th>
-                            <th className="px-10 py-6 text-right">Controle de Segurança</th>
+                            <th className="px-10 py-6">Identificação e Contato</th>
+                            <th className="px-10 py-6">Documento (CPF)</th>
+                            <th className="px-10 py-6 text-center">Status VIP</th>
+                            <th className="px-10 py-6">Data Cadastro</th>
+                            <th className="px-10 py-6 text-right">Ações</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
                         {filteredUsers.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-10 py-20 text-center text-gray-400 font-medium italic">
+                                <td colSpan={6} className="px-10 py-20 text-center text-gray-400 font-medium italic">
                                     Nenhum usuário encontrado para "{search}"
                                 </td>
                             </tr>
@@ -79,13 +98,19 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                                             </div>
                                             <div>
                                                 <div className="font-bold text-gray-900 flex items-center gap-2">
-                                                    {user.email}
+                                                    {user.name || 'Sem Nome'}
                                                     {user.email === 'imedeiros@outlook.com' && <ShieldCheck size={14} className="text-blue-500" />}
                                                 </div>
-                                                <div className="text-[10px] text-gray-400 font-mono tracking-tighter flex items-center gap-1 mt-0.5">
-                                                    <Fingerprint size={10} /> {user.id}
+                                                <div className="text-xs text-gray-500 mt-0.5">{user.email}</div>
+                                                <div className="text-[10px] text-gray-400 font-bold mt-1 tracking-wider uppercase">
+                                                    📱 {formatPhone(user.phone)}
                                                 </div>
                                             </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-10 py-6">
+                                        <div className="text-sm font-mono text-gray-600 bg-gray-50 px-3 py-1 rounded-lg inline-block">
+                                            {formatCPF(user.cpfCnpj)}
                                         </div>
                                     </td>
                                     <td className="px-10 py-6 text-center">
@@ -96,10 +121,10 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                                             {user.subscriptionStatus === 'active' ? 'Diamante ✨' : 'Standard'}
                                         </span>
                                     </td>
-                                    <td className="px-10 py-6 text-sm text-gray-500 font-medium">
+                                    <td className="px-10 py-6 text-sm text-gray-500 font-medium whitespace-nowrap">
                                         <div className="flex items-center gap-2">
                                             <Calendar size={14} className="text-gray-300" />
-                                            {new Date(user.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                                            {new Date(user.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </div>
                                     </td>
                                     <td className="px-10 py-6">
