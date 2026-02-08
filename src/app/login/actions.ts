@@ -65,16 +65,15 @@ export async function signUpAction(data: SignUpData) {
                 subscriptionStatus: 'inactive',
             } as any,
         });
-    });
-} catch (dbError) {
-    console.error('Erro ao salvar no banco:', dbError);
-    // Não vamos falhar o cadastro se o banco der erro, pois o auth já foi criado.
-    // O usuário pode completar depois no perfil ou checkout.
-}
+    } catch (dbError) {
+        console.error('Erro ao salvar no banco:', dbError);
+        // Não vamos falhar o cadastro se o banco der erro, pois o auth já foi criado.
+        // O usuário pode completar depois no perfil ou checkout.
+    }
 
-// 3. Tentar logar automaticamente se possível (depende da config de confirmação de email)
-// Se "Confirm Email" estiver ligado no Supabase, o login falha até clicar no link.
-// Retornamos sucesso para a UI avisar.
+    // 3. Tentar logar automaticamente se possível (depende da config de confirmação de email)
+    // Se "Confirm Email" estiver ligado no Supabase, o login falha até clicar no link.
+    // Retornamos sucesso para a UI avisar.
 
-return { success: true };
+    return { success: true };
 }
