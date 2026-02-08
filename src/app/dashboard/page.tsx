@@ -6,7 +6,6 @@ import Filters from '@/components/Filters';
 import GameCard from '@/components/GameCard';
 import prisma from '@/lib/prisma';
 import { createClient } from '@/utils/supabase/server';
-import { ManageSubscriptionButton } from './components/ManageSubscriptionButton';
 
 export const dynamic = 'force-dynamic';
 
