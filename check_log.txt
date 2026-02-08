@@ -1,0 +1,11 @@
+Iniciando verificação...
+
+Verificando item funcional: 0 ao 20 em Inglês
+[200] https://dmrafr2igetxh.cloudfront.net/todas/0_ao_20_em_ingles_49439/thumbnail.jpeg
+
+Verificando item quebrado: Qual é o valor do número?
+Base URL: https://dmrafr2igetxh.cloudfront.net/todas/qual_e_o_valor_do_numero_53802
+[404] https://dmrafr2igetxh.cloudfront.net/todas/qual_e_o_valor_do_numero_53802/thumbnail.jpeg
+[404] https://dmrafr2igetxh.cloudfront.net/todas/qual_e_o_valor_do_numero_53802/thumbnail.jpg
+[200] https://dmrafr2igetxh.cloudfront.net/todas/qual_e_o_valor_do_numero_53802/thumbnail.png
+>>> ENCONTRADO! URL correta: https://dmrafr2igetxh.cloudfront.net/todas/qual_e_o_valor_do_numero_53802/thumbnail.png

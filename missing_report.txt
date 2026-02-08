@@ -1,0 +1,84 @@
+RELATÓRIO DE IMAGENS FALTANTES NO CLOUDFRONT
+==============================================
+Estes arquivos existem no seu computador mas NÃO estão no servidor online.
+Você precisa fazer o upload deles para a pasta correspondente no S3/CloudFront.
+
+[FALTA] o_jardim_encantado_i_silabas_do_a_48746/thumbnail.jpeg
+[FALTA] quiz_placas_de_transito_70460/thumbnail.jpeg
+[FALTA] quiz_animais_10181/thumbnail.jpeg
+[FALTA] quiz_atividade_i_portugues_7735/thumbnail.jpeg
+[FALTA] quiz_ciencias_virus_11935/thumbnail.jpeg
+[FALTA] quiz_expansao_maritima_reforma_e_contrarreforma_11528/thumbnail.jpeg
+[FALTA] quiz_hidrografia_21544/thumbnail.jpeg
+[FALTA] quiz_historia_do_brasil_e_movimentos_populares_11542/thumbnail.jpeg
+[FALTA] quiz_migracao_32508/thumbnail.jpeg
+[FALTA] quiz_o_solo_17012/thumbnail.jpeg
+[FALTA] quiz_hidrografia_ii_24358/thumbnail.jpeg
+[FALTA] quiz_paisagem_espaco_e_lugar_42214/thumbnail.jpeg
+[FALTA] quiz_pre_historia_15098/thumbnail.jpeg
+[FALTA] recarregue_44198/thumbnail.jpeg
+[FALTA] reflexao_da_luz_39996/thumbnail.jpeg
+[FALTA] roleta_frutas_39947/thumbnail.jpeg
+[FALTA] show_de_talentos_empreendedorismo_13362/thumbnail.jpeg
+[FALTA] roleta_legumes_39948/thumbnail.jpeg
+[FALTA] rotacao_da_terra_21528/thumbnail.jpeg
+[FALTA] sequencia_logica_16543/thumbnail.jpeg
+[FALTA] seres_vivos_e_seres_nao_vivos_13676/thumbnail.jpeg
+[FALTA] shopping_virtual_10946/thumbnail.jpeg
+[FALTA] silabas_ii_13165/thumbnail.jpeg
+[FALTA] silabas_i_13163/thumbnail.jpeg
+[FALTA] simbolos_10113/thumbnail.jpeg
+[FALTA] silabas_49168/thumbnail.jpeg
+[FALTA] silabas_complexas_parte_iii_50763/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_analise_linguistica_61533/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_analise_linguistica_e_ortografia_61534/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_analise_linguistica_e_semiotica_60646/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_campo_jornalisticomidiatico_60619/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_analise_linguistica_e_semiotica_leitura_e_producao_de_texto_60626/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_a_funcao_dos_textos_ao_nosso_redor_64031/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_interpretacao_de_texto_analise_linguistica_e_ortografia_63197/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_noticias_curiosidades_e_adivinhas_64129/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_ortografia_e_analise_linguistica_semiotica_62886/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_leitura_alfabetizacao_e_producao_de_texto_62832/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_leitura_analise_linguistica_semiotica_e_producao_de_texto_60597/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_os_generos_textuais_no_nosso_cotidiano_63699/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_poemas_tirinhas_fabulas_e_outros_textos_64126/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_relacionando_textos_a_imagens_64123/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_tirinhas_e_textos_publicitarios_64130/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_textos_jornalisticos_e_textos_publicitarios_64131/thumbnail.jpeg
+[FALTA] sinonimos_e_antonimos_10150/thumbnail.jpeg
+[FALTA] sistema_digestorio_12025/thumbnail.jpeg
+[FALTA] sistema_digestorio_ii_34454/thumbnail.jpeg
+[FALTA] sinonimos_e_antonimos_56387/thumbnail.jpeg
+[FALTA] tipos_de_solo_14724/thumbnail.jpeg
+[FALTA] transformando_as_porcentagens_13472/thumbnail.jpeg
+[FALTA] vamos_contar_17668/thumbnail.jpeg
+[FALTA] vamos_contar_70610/thumbnail.jpeg
+[FALTA] verbo_da_memoria_38862/thumbnail.jpeg
+[FALTA] vida_saudavel_32394/thumbnail.jpeg
+[FALTA] ciclo_de_alfabetizacao_11_silabas_simples_53788/thumbnail.jpeg
+[FALTA] decifrando_simbolos_e_informando_se_sobre_o_transito_70472/thumbnail.jpeg
+[FALTA] o_jardim_encantado_v_silabas_do_u_54181/thumbnail.jpeg
+[FALTA] quiz_educacao_infantil_quantidades_44188/thumbnail.jpeg
+[FALTA] o_jardim_encantado_iii_silabas_do_i_52954/thumbnail.jpeg
+[FALTA] quiz_ou_isto_ou_aquilo_40836/thumbnail.jpeg
+[FALTA] quiz_blocos_economicos_i_16912/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_o_dia_a_dia_da_nossa_lingua_1_60656/thumbnail.jpeg
+[FALTA] o_jardim_encantado_iv_silabas_do_o_53620/thumbnail.jpeg
+[FALTA] quiz_situacoes_de_transito_70466/thumbnail.jpeg
+[FALTA] silabas_complexas_parte_ii_51356/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_lendo_poemas_e_interpretando_textos_70462/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_leitura_e_analises_linguistica_e_semiotica_62240/thumbnail.jpeg
+[FALTA] silabas_complexas_parte_i_51260/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_o_dia_a_dia_da_nossa_lingua_4_60680/thumbnail.jpeg
+[FALTA] simbolos_natalinos_e_suas_sombras_53761/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_o_dia_a_dia_da_nossa_lingua_3_60674/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_leitura_e_interpretacao_de_textos_64000/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_teatro_poemas_contos_e_outros_textos_64059/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_o_dia_a_dia_da_nossa_lingua_5_60634/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_alfabetizacao_e_producao_de_textos_62829/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_o_dia_a_dia_da_nossa_lingua_2_60672/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_ortografia_e_interpretacao_de_texto_63327/thumbnail.jpeg
+[FALTA] simulado_de_lingua_portuguesa_generos_textuais_jornalisticos_e_tipos_de_linguagem_62473/thumbnail.jpeg
+
+Total: 77 arquivos faltantes.

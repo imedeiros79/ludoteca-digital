@@ -1,0 +1,71 @@
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
+import { PrismaClient } from '@prisma/client';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2024-06-20',
+});
+
+const prisma = new PrismaClient();
+
+export async function POST(req: Request) {
+    const body = await req.text();
+    const signature = headers().get('Stripe-Signature') as string;
+
+    let event: Stripe.Event;
+
+    try {
+        if (!process.env.STRIPE_WEBHOOK_SECRET) {
+            throw new Error('STRIPE_WEBHOOK_SECRET is missing');
+        }
+        event = stripe.webhooks.constructEvent(
+            body,
+            signature,
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
+    } catch (error: any) {
+        return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
+    }
+
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    if (event.type === 'checkout.session.completed') {
+        const subscription = await stripe.subscriptions.retrieve(
+            session.subscription as string
+        );
+
+        if (!session?.metadata?.userId) {
+            return new NextResponse('User ID is missing in metadata', { status: 400 });
+        }
+
+        await prisma.user.update({
+            where: {
+                id: session.metadata.userId,
+            },
+            data: {
+                stripeCustomerId: subscription.customer as string,
+                subscriptionStatus: 'active',
+            },
+        });
+    }
+
+    if (event.type === 'invoice.payment_succeeded') {
+        const subscription = await stripe.subscriptions.retrieve(
+            session.subscription as string
+        );
+
+        // Update status to active (in case it was past_due)
+        // We need to find user by customer ID since metadata might not be here
+        await prisma.user.updateMany({
+            where: {
+                stripeCustomerId: subscription.customer as string,
+            },
+            data: {
+                subscriptionStatus: 'active',
+            }
+        });
+    }
+
+    return new NextResponse(null, { status: 200 });
+}

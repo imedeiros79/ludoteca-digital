@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Gamepad2, BookOpen, Star, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import SubscribeButton from '@/components/SubscribeButton';
 
 export default function Home() {
   return (
@@ -127,7 +128,7 @@ export default function Home() {
             <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 hover:border-purple-500 transition-all">
               <h3 className="text-xl font-semibold text-gray-300 mb-2">Mensal</h3>
               <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold">R$ 29,90</span>
+                <span className="text-4xl font-bold">R$ 19,90</span>
                 <span className="text-gray-400">/mês</span>
               </div>
               <ul className="space-y-4 mb-8 text-gray-300">
@@ -135,9 +136,12 @@ export default function Home() {
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Filtros por BNCC</li>
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Cancele quando quiser</li>
               </ul>
-              <button className="w-full py-4 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-semibold transition-colors">
+              <SubscribeButton
+                priceId={process.env.STRIPE_PRICE_ID_MENSAL || ''}
+                className="w-full py-4 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-semibold transition-colors flex items-center justify-center"
+              >
                 Assinar Mensal
-              </button>
+              </SubscribeButton>
             </div>
 
             {/* Anual */}
@@ -147,20 +151,23 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-purple-200 mb-2">Anual</h3>
               <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold text-white">R$ 299,00</span>
+                <span className="text-4xl font-bold text-white">R$ 120,00</span>
                 <span className="text-purple-200">/ano</span>
               </div>
               <p className="text-sm text-purple-200 mb-6 bg-purple-800/50 p-2 rounded">
-                Economize R$ 59,80 (2 meses grátis)
+                Economize R$ 118,80 (equivalente a R$ 10,00/mês)
               </p>
               <ul className="space-y-4 mb-8 text-purple-100">
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-amber-400" /> Todos os benefícios do Mensal</li>
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-amber-400" /> Suporte Prioritário</li>
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-amber-400" /> Acesso antecipado a novidades</li>
               </ul>
-              <button className="w-full py-4 bg-white text-purple-900 hover:bg-gray-100 rounded-xl font-bold transition-colors shadow-lg">
+              <SubscribeButton
+                priceId={process.env.STRIPE_PRICE_ID_ANUAL || ''}
+                className="w-full py-4 bg-white text-purple-900 hover:bg-gray-100 rounded-xl font-bold transition-colors shadow-lg flex items-center justify-center"
+              >
                 Assinar Anual
-              </button>
+              </SubscribeButton>
             </div>
           </div>
 
