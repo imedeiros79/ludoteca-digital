@@ -61,7 +61,24 @@ export async function POST(req: Request) {
 
         // O Asaas retorna invoiceUrl na primeira cobrança da assinatura
         // Para garantir, vamos buscar a fatura se não vier na resposta direta
-        const url = subscription.invoiceUrl || subscription.bankSlipUrl || `https://www.asaas.com/c/checkout/${subscription.id}`;
+        let url = subscription.invoiceUrl || subscription.bankSlipUrl;
+
+        if (!url) {
+            // Se não vier na criação da assinatura, buscamos a cobrança gerada
+            try {
+                const payments = await asaasService.getSubscriptionPayments(subscription.id);
+                if (payments.data && payments.data.length > 0) {
+                    url = payments.data[0].invoiceUrl || payments.data[0].bankSlipUrl;
+                }
+            } catch (pErr) {
+                console.warn('Erro ao buscar pagamentos da assinatura:', pErr);
+            }
+        }
+
+        // Fallback final (mas idealmente deve ter achado acima)
+        if (!url) {
+            url = `https://www.asaas.com/c/checkout/${subscription.id}`; // Tenta link genérico se falhar tudo
+        }
 
         return NextResponse.json({
             id: subscription.id,

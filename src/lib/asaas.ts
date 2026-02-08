@@ -111,6 +111,11 @@ export class AsaasService {
             body: JSON.stringify(data),
         });
     }
+
+    // Listar cobranças de uma assinatura
+    async getSubscriptionPayments(subscriptionId: string) {
+        return this.request(`/payments?subscription=${subscriptionId}`);
+    }
 }
 
 export const asaas = new AsaasService();
