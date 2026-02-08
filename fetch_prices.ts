@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: 'd:/Antigravity-projetos/aulasssas/ludoteca-digital/.env' });
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-06-20', // Use latest stable or user specific
+    apiVersion: '2026-01-28.clover',
 });
 
 async function main() {
