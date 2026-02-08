@@ -54,9 +54,9 @@ async function findImageInBucket(folderName: string): Promise<string | null> {
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
 
         // Prioritize "thumbnail" or "capa" if possible, but any valid image is better than nothing
-        const images = response.Contents
+        const images = (response.Contents || [])
             .map(item => item.Key)
-            .filter(key => key && imageExtensions.some(ext => key.toLowerCase().endsWith(ext)));
+            .filter((key): key is string => !!key && imageExtensions.some(ext => key.toLowerCase().endsWith(ext)));
 
         if (images.length === 0) return null;
 
