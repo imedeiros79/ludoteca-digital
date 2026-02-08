@@ -77,7 +77,9 @@ export default async function Dashboard({
             prisma.item.count({ where: whereCondition })
         ]);
         games = gamesRes;
-        totalCount = isVIP ? countRes : 3; // Mostrar apenas 3 no contador se não for VIP
+        // Se não for VIP, mostra o menor entre o total real e 3. 
+        // Se countRes for 0, mostra 0. Se for 100, mostra 3.
+        totalCount = isVIP ? countRes : Math.min(countRes, 3);
     } catch (error: any) {
         console.error('Erro ao carregar Dashboard:', error);
         return (
