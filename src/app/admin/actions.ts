@@ -48,4 +48,6 @@ export async function toggleUserVIP(userId: string, currentStatus: string) {
     });
 
     revalidatePath('/admin');
+    revalidatePath('/dashboard/profile');
+    revalidatePath('/dashboard');
 }
