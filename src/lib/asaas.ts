@@ -18,7 +18,11 @@ class AsaasService {
 
     constructor() {
         this.apiKey = process.env.ASAAS_API_KEY || '';
-        this.baseUrl = process.env.ASAAS_API_URL || 'https://www.asaas.com/api/v3';
+        this.baseUrl = process.env.ASAAS_API_URL || 'https://api.asaas.com/v3';
+
+        if (!this.apiKey) {
+            console.warn('[Asaas] ASAAS_API_KEY não encontrada!');
+        }
     }
 
     private async request(endpoint: string, options: RequestInit = {}) {

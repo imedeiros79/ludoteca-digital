@@ -33,21 +33,25 @@ export async function POST(req: Request) {
 
         const subscription = await asaas.createSubscription({
             customer: customerId,
-            billingType: 'UNDEFINED',
+            billingType: 'PIX', // Inicia como PIX, o usuário pode alterar no portal se necessário
             value: value,
             nextDueDate: nextDueDate,
             cycle: cycle,
         });
 
-        // 3. Salvar o customerId no banco para futuras consultas e webhooks
+        // 3. Salvar o customerId no banco
         await prisma.user.update({
             where: { email: authUser.email! },
-            data: { stripeCustomerId: customerId } // Reutilizando o campo stripeCustomerId por enquanto para evitar migração de schema
+            data: { stripeCustomerId: customerId }
         });
+
+        // O Asaas retorna invoiceUrl na primeira cobrança da assinatura
+        // Para garantir, vamos buscar a fatura se não vier na resposta direta
+        const url = subscription.invoiceUrl || subscription.bankSlipUrl || `https://www.asaas.com/c/checkout/${subscription.id}`;
 
         return NextResponse.json({
             id: subscription.id,
-            url: subscription.invoiceUrl // O Asaas retorna um link de checkout/fatura
+            url: url
         });
     } catch (err) {
         console.error('Asaas Checkout Error:', err);
