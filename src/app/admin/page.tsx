@@ -172,7 +172,7 @@ export default async function AdminPage() {
                                             {new Date(user.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
                                         </td>
                                         <td className="px-10 py-6">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center justify-end gap-3">
                                                 {/* Toggle VIP */}
                                                 <form action={async () => {
                                                     'use server'
@@ -193,9 +193,7 @@ export default async function AdminPage() {
                                                 {/* Delete User */}
                                                 <form action={async () => {
                                                     'use server'
-                                                    if (confirm('Tem certeza que deseja DELETAR este usuário PERMANENTEMENTE?')) {
-                                                        await deleteUser(user.id);
-                                                    }
+                                                    await deleteUser(user.id);
                                                 }}>
                                                     <button
                                                         type="submit"
