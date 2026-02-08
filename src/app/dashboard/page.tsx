@@ -46,15 +46,41 @@ export default async function Dashboard({
     };
 
     // Get Data and Count
-    const [games, totalCount] = await Promise.all([
-        prisma.item.findMany({
-            where: whereCondition,
-            take: itemsPerPage,
-            skip: skip,
-            orderBy: { createdAt: 'desc' },
-        }),
-        prisma.item.count({ where: whereCondition })
-    ]);
+    let games: any[] = [];
+    let totalCount = 0;
+
+    try {
+        const [gamesRes, countRes] = await Promise.all([
+            prisma.item.findMany({
+                where: whereCondition,
+                take: itemsPerPage,
+                skip: skip,
+                orderBy: { createdAt: 'desc' },
+            }),
+            prisma.item.count({ where: whereCondition })
+        ]);
+        games = gamesRes;
+        totalCount = countRes;
+    } catch (error: any) {
+        console.error('Erro ao carregar Dashboard:', error);
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+                    <div className="text-red-500 mb-4 text-5xl">⚠️</div>
+                    <h1 className="text-xl font-bold text-gray-900 mb-2">Erro de Conexão</h1>
+                    <p className="text-gray-600 mb-4">
+                        Não conseguimos conectar ao banco de dados. Verifique se todas as chaves (DATABASE_URL e DIRECT_URL) estão corretas na Vercel.
+                    </p>
+                    <code className="block bg-gray-100 p-2 rounded text-xs text-left overflow-auto mb-4">
+                        {error.message || 'Erro desconhecido'}
+                    </code>
+                    <a href="/dashboard" className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg font-medium">
+                        Tentar Novamente
+                    </a>
+                </div>
+            </div>
+        );
+    }
 
     const totalPages = Math.ceil(totalCount / itemsPerPage);
 
