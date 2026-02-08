@@ -44,7 +44,7 @@ export default function ProfilePage() {
             try {
                 // We'll reimplement getPaymentHistory to also return user profile data for simplicity or use separate action.
                 // Let's assume we fetch from fetching the action we are about to create: getUserProfile
-                const profile = await getPaymentHistory(); // Misused name for now, I'll update actions.ts to include getProfile
+                const profile = await getPaymentHistory() as any;
                 if (profile && profile.user) {
                     setUser(profile.user);
                     setName(profile.user.name || '');

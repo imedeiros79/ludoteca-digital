@@ -99,7 +99,7 @@ export async function getPaymentHistory() {
     }
 
     return {
-        user: { ...user, subscriptionStatus: user.subscriptionStatus || 'inactive' },
+        user: { ...user, subscriptionStatus: user.subscriptionStatus || 'inactive' } as any,
         payments
     };
 }
