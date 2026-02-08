@@ -143,10 +143,6 @@ export default async function Dashboard({
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-6 mr-4 border-r border-gray-100 pr-6">
-                        <ManageSubscriptionButton />
-                    </div>
-
                     <div className="flex items-center gap-3">
                         <div className="text-right hidden md:block">
                             <div className="text-xs font-bold text-gray-900">{dbUser?.email}</div>
