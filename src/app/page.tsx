@@ -1,10 +1,18 @@
 import Link from 'next/link';
-import { Gamepad2, BookOpen, Star, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Gamepad2, Star, CheckCircle, ArrowRight, ShieldCheck, MessageCircle } from 'lucide-react';
+import prisma from '@/lib/prisma';
 import SubscribeButton from '@/components/SubscribeButton';
 
-export default function Home() {
+export default async function Home() {
+  // Buscar 6 jogos reais para a vitrine
+  const showcaseGames = await prisma.item.findMany({
+    take: 6,
+    orderBy: { createdAt: 'desc' },
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans selection:bg-purple-500 selection:text-white">
+      {/* ... rest of the component ... */}
       {/* Header / Nav */}
       <header className="fixed w-full bg-white/80 backdrop-blur-md border-b border-gray-100 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -83,22 +91,30 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div key={item} className="group relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
+            {showcaseGames.map((game) => (
+              <div key={game.id} className="group relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
                 <div className="aspect-video bg-gray-200 group-hover:bg-purple-100 transition-colors flex items-center justify-center relative">
-                  <Gamepad2 size={48} className="text-gray-400 group-hover:text-purple-500 transition-colors" />
+                  {game.imageUrl ? (
+                    <img
+                      src={game.imageUrl}
+                      alt={game.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <Gamepad2 size={48} className="text-gray-400 group-hover:text-purple-500 transition-colors" />
+                  )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-medium">Matemática</span>
-                    <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-medium">EF</span>
+                    <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-medium">{game.subject || 'Pedagógico'}</span>
+                    <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-medium">{game.year || 'EF'}</span>
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
-                    Jogo Educativo Exemplo {item}
+                  <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-purple-600 transition-colors line-clamp-1">
+                    {game.title}
                   </h3>
-                  <p className="text-gray-500 text-sm mb-4">
-                    Atividade interativa para trabalhar conceitos fundamentais de forma lúdica.
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+                    {game.description || 'Atividade interativa para trabalhar conceitos fundamentais de forma lúdica.'}
                   </p>
                 </div>
               </div>
@@ -186,10 +202,17 @@ export default function Home() {
             </div>
             <span className="font-bold text-gray-600">Ludoteca Digital</span>
           </div>
-          <div className="flex justify-center gap-8 mb-8 text-sm text-gray-500">
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mb-8 text-sm text-gray-500">
             <Link href="/termos" className="hover:text-purple-600 transition-colors">Termos de Uso</Link>
             <Link href="/privacidade" className="hover:text-purple-600 transition-colors">Política de Privacidade</Link>
-            <Link href="#" className="hover:text-purple-600 transition-colors">Contato</Link>
+            <a
+              href="https://wa.me/5531972198551"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-purple-600 font-medium hover:text-purple-700 transition-colors"
+            >
+              <MessageCircle size={16} /> Contato WhatsApp
+            </a>
           </div>
           <p className="text-xs text-gray-400">
             &copy; {new Date().getFullYear()} Ludoteca Digital. Todos os direitos reservados.
