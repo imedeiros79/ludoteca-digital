@@ -68,18 +68,42 @@ export async function getPaymentHistory() {
         throw new Error('Usuário não autenticado.');
     }
 
-    // Buscar dados do usuário no Prisma
-    const user = await prisma.user.findUnique({
+    // 1. Tentar buscar dados do usuário no Prisma
+    let user = await prisma.user.findUnique({
         where: { id: authUser.id },
         select: {
+            id: true,
             name: true,
             email: true,
-            cpfCnpj: true, // as any cast needed if not in schema yet
-            phone: true,   // as any cast needed if not in schema yet
+            cpfCnpj: true,
+            phone: true,
             subscriptionStatus: true,
             asaasCustomerId: true,
         } as any
     });
+
+    // 2. Resiliência: Se o usuário não existir no Prisma ou estiver incompleto, sincronizar do Auth
+    if (!user || (!user.name && authUser.user_metadata?.full_name)) {
+        console.log('Sincronizando usuário do Supabase Auth para o Prisma...', authUser.id);
+        const metadata = authUser.user_metadata;
+
+        user = await prisma.user.upsert({
+            where: { id: authUser.id },
+            update: {
+                name: user?.name || metadata?.full_name || '',
+                cpfCnpj: user?.cpfCnpj || metadata?.cpf?.replace(/\D/g, '') || '',
+                phone: user?.phone || metadata?.phone?.replace(/\D/g, '') || '',
+            } as any,
+            create: {
+                id: authUser.id,
+                email: authUser.email!,
+                name: metadata?.full_name || '',
+                cpfCnpj: metadata?.cpf?.replace(/\D/g, '') || '',
+                phone: metadata?.phone?.replace(/\D/g, '') || '',
+                subscriptionStatus: 'inactive',
+            } as any
+        });
+    }
 
     if (!user) return null;
 
@@ -88,7 +112,6 @@ export async function getPaymentHistory() {
     // Se tiver ID do Asaas, buscar cobranças
     if (user.asaasCustomerId) {
         try {
-            // Buscar cobranças do cliente no Asaas
             const response = await asaasService.request(`/payments?customer=${user.asaasCustomerId}&limit=10`);
             if (response.data) {
                 payments = response.data;
@@ -99,7 +122,14 @@ export async function getPaymentHistory() {
     }
 
     return {
-        user: { ...user, subscriptionStatus: user.subscriptionStatus || 'inactive' } as any,
+        user: {
+            ...user,
+            subscriptionStatus: user.subscriptionStatus || 'inactive',
+            // Fallbacks caso os campos do banco ainda estejam vazios
+            name: user.name || authUser.user_metadata?.full_name || '',
+            cpfCnpj: user.cpfCnpj || authUser.user_metadata?.cpf || '',
+            phone: user.phone || authUser.user_metadata?.phone || '',
+        } as any,
         payments
     };
 }

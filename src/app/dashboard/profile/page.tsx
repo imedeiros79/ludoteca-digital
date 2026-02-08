@@ -45,6 +45,7 @@ export default function ProfilePage() {
                 // We'll reimplement getPaymentHistory to also return user profile data for simplicity or use separate action.
                 // Let's assume we fetch from fetching the action we are about to create: getUserProfile
                 const profile = await getPaymentHistory() as any;
+                console.log('Dados do perfil carregados:', profile?.user);
                 if (profile && profile.user) {
                     setUser(profile.user);
                     setName(profile.user.name || '');
