@@ -6,12 +6,13 @@ export async function updateSession(request: NextRequest) {
         request,
     })
 
-    // Proteção de rotas: dashboard, jogar e content (arquivos do jogo)
+    // Proteção de rotas: dashboard, jogar, content, checkout e admin
     if (
         request.nextUrl.pathname.startsWith('/dashboard') ||
         request.nextUrl.pathname.startsWith('/jogar') ||
         request.nextUrl.pathname.startsWith('/content') ||
-        request.nextUrl.pathname.startsWith('/checkout')
+        request.nextUrl.pathname.startsWith('/checkout') ||
+        request.nextUrl.pathname.startsWith('/admin')
     ) {
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,6 +50,13 @@ export async function updateSession(request: NextRequest) {
             }
             const url = request.nextUrl.clone()
             url.pathname = '/login'
+            return NextResponse.redirect(url)
+        }
+
+        // Bloqueio extra para /admin (Apenas o proprietário)
+        if (request.nextUrl.pathname.startsWith('/admin') && user.email !== 'imedeiros@outlook.com') {
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
             return NextResponse.redirect(url)
         }
     }

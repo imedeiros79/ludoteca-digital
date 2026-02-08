@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 export async function POST(req: Request) {
+    // 1. Validar Token de Segurança (Blindagem contra invasores)
+    const authToken = req.headers.get('asaas-access-token');
+    const secret = process.env.ASAAS_WEBHOOK_TOKEN;
+
+    if (!secret || authToken !== secret) {
+        console.error('Tentativa de acesso não autorizado ao Webhook do Asaas!');
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const body = await req.json();
         const { event, payment, subscription } = body;
