@@ -25,7 +25,7 @@ export class AsaasService {
         }
     }
 
-    private async request(endpoint: string, options: RequestInit = {}) {
+    public async request(endpoint: string, options: RequestInit = {}) {
         const url = `${this.baseUrl}${endpoint}`;
         const headers = {
             'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export class AsaasService {
             throw new Error(data.errors?.[0]?.description || 'Erro na API do Asaas');
         }
 
-        return data;
+        return data; // Retorna o corpo da resposta (contendo .data, .object, etc)
     }
 
     // Buscar ou criar cliente
@@ -59,16 +59,6 @@ export class AsaasService {
             // mas por simplicidade vamos assumir que o ID basta.
             // Opcional: Se quiser garantir update:
             if (cpfCnpj || phone) {
-                await this.request(`/customers/${customers.data[0].id}`, {
-                    method: 'POST', // Asaas usa POST para update em alguns endpoints ou PUT? Doc diz POST ou PUT geralmente.
-                    // Docs v3: PUT /customers/{id}
-                    // Vamos checar docs se possível, mas PUT é padrão REST.
-                    // Na dúvida, vamos só retornar o ID. Se der erro de "dados obrigatórios" na assinatura mesmo com cliente existindo,
-                    // então precisaremos atualizar. O erro atual é "preencher CPF do cliente", o que sugere que o cliente EXISTE mas sem CPF.
-                    // Então SIM, PRECISAMOS ATUALIZAR.
-                });
-
-                // Vamos tentar fazer o update.
                 try {
                     await this.request(`/customers/${customers.data[0].id}`, {
                         method: 'POST', // Testando POST primeiro, muitos gateways usam POST para update parcial.
@@ -104,6 +94,13 @@ export class AsaasService {
         });
     }
 
+    // Cancelar/Remover assinatura
+    async deleteSubscription(subscriptionId: string) {
+        return this.request(`/subscriptions/${subscriptionId}`, {
+            method: 'DELETE'
+        });
+    }
+
     // Criar uma cobrança única (Checkout)
     async createPayment(data: any) {
         return this.request('/payments', {
@@ -114,7 +111,8 @@ export class AsaasService {
 
     // Listar cobranças de uma assinatura
     async getSubscriptionPayments(subscriptionId: string) {
-        return this.request(`/payments?subscription=${subscriptionId}`);
+        const res = await this.request(`/payments?subscription=${subscriptionId}`);
+        return res; // Retorna o objeto completo da resposta (com .data)
     }
 }
 
