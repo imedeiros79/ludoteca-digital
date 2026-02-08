@@ -1,13 +1,11 @@
 // ... imports
-import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { Gamepad2, ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchInput from '@/components/SearchInput';
 import { SignOutButton } from '@/components/SignOutButton';
 import Filters from '@/components/Filters';
 import GameCard from '@/components/GameCard';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 

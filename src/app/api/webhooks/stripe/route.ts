@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,9 +10,6 @@ function getStripe() {
         apiVersion: '2026-01-28.clover',
     });
 }
-
-// Mover prisma para uma instância global singleton recomendada ou inicializar dentro
-const getPrisma = () => new PrismaClient();
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -46,7 +43,6 @@ export async function POST(req: Request) {
             return new NextResponse('User ID is missing in metadata', { status: 400 });
         }
 
-        const prisma = getPrisma();
         await prisma.user.update({
             where: {
                 id: session.metadata.userId,
@@ -66,7 +62,6 @@ export async function POST(req: Request) {
 
         // Update status to active (in case it was past_due)
         // We need to find user by customer ID since metadata might not be here
-        const prisma = getPrisma();
         await prisma.user.updateMany({
             where: {
                 stripeCustomerId: subscription.customer as string,
