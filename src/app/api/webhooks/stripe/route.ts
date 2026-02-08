@@ -4,14 +4,14 @@ import Stripe from 'stripe';
 import { PrismaClient } from '@prisma/client';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-06-20',
+    apiVersion: '2026-01-28.clover',
 });
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     const body = await req.text();
-    const signature = headers().get('Stripe-Signature') as string;
+    const signature = (await headers()).get('Stripe-Signature') as string;
 
     let event: Stripe.Event;
 

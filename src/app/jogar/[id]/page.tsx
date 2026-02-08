@@ -16,7 +16,7 @@ interface Props {
 export default async function PlayerPage({ params }: Props) {
     // Acesso seguro aos params (em Next 15+ espera-se await, mas no 14/standard ainda é direto ou via prop. Vamos usar direto pois params é prop).
     // Nota: Next.js 15 pode exigir await params. Por garantia em versões recentes:
-    const { id } = await Promise.resolve(params);
+    const { id } = await params;
 
     // Verificar Auth
     const supabase = await createClient();
