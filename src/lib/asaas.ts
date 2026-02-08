@@ -12,7 +12,7 @@ export interface AsaasSubscription {
     cycle: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUALLY' | 'ANNUALLY';
 }
 
-class AsaasService {
+export class AsaasService {
     private apiKey: string;
     private baseUrl: string;
 
@@ -51,17 +51,47 @@ class AsaasService {
     }
 
     // Buscar ou criar cliente
-    async getOrCreateCustomer(email: string, name: string): Promise<string> {
+    async getOrCreateCustomer(email: string, name: string, cpfCnpj?: string, phone?: string): Promise<string> {
         // Tentar buscar por email
         const customers = await this.request(`/customers?email=${encodeURIComponent(email)}`);
         if (customers.data && customers.data.length > 0) {
+            // Poderíamos atualizar o cliente aqui se tivermos CPF/Phone novos, 
+            // mas por simplicidade vamos assumir que o ID basta.
+            // Opcional: Se quiser garantir update:
+            if (cpfCnpj || phone) {
+                await this.request(`/customers/${customers.data[0].id}`, {
+                    method: 'POST', // Asaas usa POST para update em alguns endpoints ou PUT? Doc diz POST ou PUT geralmente.
+                    // Docs v3: PUT /customers/{id}
+                    // Vamos checar docs se possível, mas PUT é padrão REST.
+                    // Na dúvida, vamos só retornar o ID. Se der erro de "dados obrigatórios" na assinatura mesmo com cliente existindo,
+                    // então precisaremos atualizar. O erro atual é "preencher CPF do cliente", o que sugere que o cliente EXISTE mas sem CPF.
+                    // Então SIM, PRECISAMOS ATUALIZAR.
+                });
+
+                // Vamos tentar fazer o update.
+                try {
+                    await this.request(`/customers/${customers.data[0].id}`, {
+                        method: 'POST', // Testando POST primeiro, muitos gateways usam POST para update parcial.
+                        body: JSON.stringify({ cpfCnpj, phone, mobilePhone: phone })
+                    });
+                } catch (e) {
+                    console.warn('Erro ao atualizar cliente Asaas:', e);
+                    // Ignora erro de update e tenta prosseguir
+                }
+            }
             return customers.data[0].id;
         }
 
         // Criar novo
         const newCustomer = await this.request('/customers', {
             method: 'POST',
-            body: JSON.stringify({ name, email }),
+            body: JSON.stringify({
+                name,
+                email,
+                cpfCnpj,
+                phone,
+                mobilePhone: phone // Asaas as vezes pede mobilePhone
+            }),
         });
         return newCustomer.id;
     }

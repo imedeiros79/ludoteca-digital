@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import prisma from '@/lib/prisma';
-import { asaas } from '@/lib/asaas';
+import { asaas, AsaasService } from '@/lib/asaas';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,8 +23,22 @@ export async function POST(req: Request) {
         const value = isAnnual ? 120.00 : 19.90;
         const cycle = isAnnual ? 'ANNUALLY' : 'MONTHLY';
 
+        const asaasService = new AsaasService(); // Instantiate AsaasService
+
+        // Buscar dados atualizados do usuário (com CPF/Phone)
+        const userDetails = await prisma.user.findUnique({
+            where: { id: authUser.id },
+        });
+
+        const safeUserDetails = userDetails as any; // Cast to any to avoid TS errors with new fields if types aren't updated
+
         // 1. Obter ou Criar Cliente no Asaas
-        const customerId = await asaas.getOrCreateCustomer(authUser.email!, authUser.email!.split('@')[0]);
+        const customerId = await asaasService.getOrCreateCustomer(
+            authUser.email!,
+            authUser.user_metadata?.full_name || safeUserDetails?.name || 'Cliente',
+            safeUserDetails?.cpfCnpj || undefined,
+            safeUserDetails?.phone || undefined
+        );
 
         // 2. Criar Assinatura no Asaas (UNDEFINED permite ao usuário escolher no checkout: PIX, Boleto ou Cartão)
         const date = new Date();
