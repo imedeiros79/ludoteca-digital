@@ -69,7 +69,7 @@ export async function getPaymentHistory() {
     }
 
     // 1. Tentar buscar dados do usuário no Prisma
-    let user = await prisma.user.findUnique({
+    let user: any = await prisma.user.findUnique({
         where: { id: authUser.id },
         select: {
             id: true,
@@ -79,7 +79,7 @@ export async function getPaymentHistory() {
             phone: true,
             subscriptionStatus: true,
             asaasCustomerId: true,
-        } as any
+        }
     });
 
     // 2. Resiliência: Se o usuário não existir no Prisma ou estiver incompleto, sincronizar do Auth
