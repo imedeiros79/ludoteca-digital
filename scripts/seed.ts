@@ -11,7 +11,7 @@ dotenv.config({ path: 'd:/Antigravity-projetos/aulasssas/ludoteca-digital/.env' 
 const prisma = new PrismaClient();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover',
+    apiVersion: '2026-01-28.clover', // Updated API version if needed, kept as is
 });
 
 const GAMES_DIR = 'D:/aulas baixadas do portal/todas';
@@ -78,24 +78,8 @@ function parseInfoTxt(filePath: string): InfoMetadata | null {
 }
 
 async function generateDescription(title: string, metadata: InfoMetadata) {
-    if (!process.env.GROQ_API_KEY) return 'Descrição automática indisponível (Sem chave API).';
-
-    try {
-        const completion = await groq.chat.completions.create({
-            messages: [{
-                role: "user",
-                content: `Crie uma descrição curta e pedagógica (máximo 3 linhas) para o jogo educativo escolar "${title}". 
-        Contexto: Matéria ${metadata.subject}, Ano ${metadata.year}.
-        Foco: Diga o que o aluno vai aprender. Use tom convidativo para professores.`
-            }],
-            model: "llama-3.3-70b-versatile",
-        });
-        return completion.choices[0]?.message?.content || "";
-    } catch (e) {
-        const error = e as Error;
-        console.error("Erro na IA:", error.message);
-        return `Jogo educativo de ${metadata.subject} para ${metadata.year}.`;
-    }
+    // FAST IMPORT: Skip AI for now to restore data quickly
+    return `Jogo educativo de ${metadata.subject} para ${metadata.year}.`;
 }
 
 async function main() {
@@ -111,13 +95,13 @@ async function main() {
     for (const folder of folders) {
         const gameUrl = urlMap.get(folder);
         if (!gameUrl) {
-            console.log(`[SKIP] URL não encontrada para pasta: ${folder}`);
+            // console.log(`[SKIP] URL não encontrada para pasta: ${folder}`);
             continue;
         }
 
         const infoPath = path.join(GAMES_DIR, folder, 'info.txt');
         if (!fs.existsSync(infoPath)) {
-            console.log(`[SKIP] info.txt não encontrado em: ${folder}`);
+            // console.log(`[SKIP] info.txt não encontrado em: ${folder}`);
             continue;
         }
 
@@ -125,12 +109,22 @@ async function main() {
         if (!metadata || !metadata.title) continue;
 
         let thumbUrl: string | null = null;
-        if (fs.existsSync(path.join(GAMES_DIR, folder, 'thumbnail.png'))) {
-            thumbUrl = gameUrl.replace('index.html', 'thumbnail.png');
-        } else if (fs.existsSync(path.join(GAMES_DIR, folder, 'thumbnail.jpg'))) {
-            thumbUrl = gameUrl.replace('index.html', 'thumbnail.jpg');
-        } else if (fs.existsSync(path.join(GAMES_DIR, folder, 'thumbnail.jpeg'))) {
-            thumbUrl = gameUrl.replace('index.html', 'thumbnail.jpeg');
+
+        // Dynamic thumbnail detection (case insensitive)
+        try {
+            const gameFolderPath = path.join(GAMES_DIR, folder);
+            const files = fs.readdirSync(gameFolderPath);
+            const thumbFile = files.find(f =>
+                f.toLowerCase().startsWith('thumbnail.') &&
+                ['.png', '.jpg', '.jpeg', '.gif', '.webp'].includes(path.extname(f).toLowerCase())
+            );
+
+            if (thumbFile) {
+                // Construct URL using the ACTUAL filename found on disk
+                thumbUrl = gameUrl.replace('index.html', thumbFile);
+            }
+        } catch (err) {
+            console.error(`Erro ao ler pasta ${folder}:`, err);
         }
 
         const description = await generateDescription(metadata.title, metadata);
@@ -165,7 +159,7 @@ async function main() {
         }
 
         processed++;
-        if (processed % 10 === 0) console.log(`Processados: ${processed}...`);
+        if (processed % 50 === 0) console.log(`Processados: ${processed}...`);
     }
 
     console.log(`Concluído! Total importados/atualizados: ${processed}`);
