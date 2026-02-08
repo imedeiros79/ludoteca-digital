@@ -22,10 +22,10 @@ const prisma = new PrismaClient();
 const s3 = new S3Client(S3_CONFIG);
 
 // Função auxiliar para ler stream do S3 (caso precisemos do info.txt no futuro)
-const streamToString = (stream: any) =>
+const streamToString = (stream: any): Promise<string> =>
     new Promise<string>((resolve, reject) => {
-        const chunks: any[] = [];
-        stream.on("data", (chunk: any) => chunks.push(chunk));
+        const chunks: Buffer[] = [];
+        stream.on("data", (chunk: Buffer) => chunks.push(chunk));
         stream.on("error", reject);
         stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     });
@@ -40,7 +40,7 @@ async function main() {
     const s3Folders: string[] = [];
 
     do {
-        const command = new ListObjectsV2Command({
+        const command: ListObjectsV2Command = new ListObjectsV2Command({
             Bucket: BUCKET_NAME,
             Prefix: PREFIX,
             Delimiter: '/',
@@ -51,7 +51,7 @@ async function main() {
 
         // CommonPrefixes contém as "pastas"
         if (response.CommonPrefixes) {
-            response.CommonPrefixes.forEach(prefix => {
+            response.CommonPrefixes.forEach((prefix: any) => {
                 if (prefix.Prefix) {
                     // Remover 'todas/' do início e '/' do final para pegar o nome da pasta
                     const folderName = prefix.Prefix.replace('todas/', '').replace('/', '');
@@ -95,25 +95,25 @@ async function main() {
             const contents = listRes.Contents || [];
 
             // Verificar se tem index.html (é um jogo válido)
-            const hasIndex = contents.some(obj => obj.Key?.endsWith('index.html'));
+            const hasIndex = contents.some((obj: any) => obj.Key?.endsWith('index.html'));
             if (!hasIndex) return; // Pula se não for jogo
 
             // Achar imagem
             const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
 
             // Tenta achar 'thumbnail' ou 'capa' primeiro
-            let imageKey = contents.find(obj =>
-                obj.Key && imageExtensions.some(ext => obj.Key!.toLowerCase().endsWith(ext)) &&
+            let imageKey = contents.find((obj: any) =>
+                obj.Key && imageExtensions.some((ext: string) => obj.Key!.toLowerCase().endsWith(ext)) &&
                 (obj.Key!.toLowerCase().includes('thumbnail') || obj.Key!.toLowerCase().includes('capa'))
             )?.Key;
 
             // Se não, pega qualquer imagem na raiz da pasta
             if (!imageKey) {
-                imageKey = contents.find(obj => {
+                imageKey = contents.find((obj: any) => {
                     if (!obj.Key) return false;
                     const relative = obj.Key.replace(prefix, '');
                     const isRootFile = !relative.includes('/');
-                    return isRootFile && imageExtensions.some(ext => obj.Key!.toLowerCase().endsWith(ext));
+                    return isRootFile && imageExtensions.some((ext: string) => obj.Key!.toLowerCase().endsWith(ext));
                 })?.Key;
             }
 

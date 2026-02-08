@@ -42,7 +42,7 @@ function getGameFolder(gameUrl: string) {
 async function findImageInBucket(folderName: string): Promise<string | null> {
     try {
         const prefix = `todas/${folderName}/`;
-        const command = new ListObjectsV2Command({
+        const command: ListObjectsV2Command = new ListObjectsV2Command({
             Bucket: BUCKET_NAME,
             Prefix: prefix
         });
@@ -55,8 +55,8 @@ async function findImageInBucket(folderName: string): Promise<string | null> {
 
         // Prioritize "thumbnail" or "capa" if possible, but any valid image is better than nothing
         const images = (response.Contents || [])
-            .map(item => item.Key)
-            .filter((key): key is string => !!key && imageExtensions.some(ext => key.toLowerCase().endsWith(ext)));
+            .map((item: any) => item.Key)
+            .filter((key: any): key is string => !!key && imageExtensions.some((ext: string) => key.toLowerCase().endsWith(ext)));
 
         if (images.length === 0) return null;
 
@@ -65,10 +65,10 @@ async function findImageInBucket(folderName: string): Promise<string | null> {
         // 2. Exact match for 'capa.*'
         // 3. Any image that is not explicitly excluded (like icons, sprites if identifiable)
 
-        const thumbnail = images.find(key => key?.toLowerCase().includes('thumbnail'));
+        const thumbnail = images.find((key: any) => key?.toLowerCase().includes('thumbnail'));
         if (thumbnail) return thumbnail;
 
-        const capa = images.find(key => key?.toLowerCase().includes('capa'));
+        const capa = images.find((key: any) => key?.toLowerCase().includes('capa'));
         if (capa) return capa;
 
         // Fallback: Return the first image found
@@ -77,7 +77,7 @@ async function findImageInBucket(folderName: string): Promise<string | null> {
         // The prefix search is recursive? Yes if Delimiter is not set.
         // Let's check if the image is in the IMMEDIATE folder to reduce risk of picking game assets.
 
-        const rootImages = images.filter(key => {
+        const rootImages = images.filter((key: any) => {
             // key is like 'todas/folder/image.png'
             // check if it has more slashes after the prefix
             const relativePath = key?.substring(prefix.length);
@@ -136,7 +136,7 @@ async function main() {
 
                 await prisma.item.update({
                     where: { id: item.id },
-                    data: { imageUrl: newUrl }
+                    data: { imageUrl: newUrl as string }
                 });
 
                 console.log(`FIXED! -> ${s3Key}`);
