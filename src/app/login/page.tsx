@@ -58,7 +58,7 @@ function LoginContent() {
                     next
                 })
 
-                if (result.error) {
+                if (result && result.error) {
                     throw new Error(result.error)
                 }
 
