@@ -112,7 +112,19 @@ export class AsaasService {
     // Listar cobranças de uma assinatura
     async getSubscriptionPayments(subscriptionId: string) {
         const res = await this.request(`/payments?subscription=${subscriptionId}`);
-        return res; // Retorna o objeto completo da resposta (com .data)
+        return res;
+    }
+
+    // Listar todos os pagamentos (para métricas globais)
+    async getAllPayments(status?: 'RECEIVED' | 'CONFIRMED' | 'PENDING', offset = 0, limit = 100) {
+        let endpoint = `/payments?offset=${offset}&limit=${limit}`;
+        if (status) endpoint += `&status=${status}`;
+        return this.request(endpoint);
+    }
+
+    // Listar todas as assinaturas
+    async getAllSubscriptions(offset = 0, limit = 100) {
+        return this.request(`/subscriptions?offset=${offset}&limit=${limit}`);
     }
 }
 
