@@ -154,7 +154,7 @@ export default async function AdminPage() {
                                                 <div>
                                                     <div className="font-bold text-gray-900 flex items-center gap-2">
                                                         {user.email}
-                                                        {user.email === 'imedeiros@outlook.com' && <ShieldCheck size={14} className="text-blue-500" title="Dono do Sistema" />}
+                                                        {user.email === 'imedeiros@outlook.com' && <ShieldCheck size={14} className="text-blue-500" />}
                                                     </div>
                                                     <div className="text-[10px] text-gray-400 font-mono tracking-tighter">REF: {user.id}</div>
                                                 </div>
