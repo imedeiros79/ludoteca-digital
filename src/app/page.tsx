@@ -47,7 +47,7 @@ export default async function Home() {
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gray-900">
             Transforme suas aulas com <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500">
-              1.442 Jogos Educativos
+              1.431 Jogos Educativos
             </span>
           </h1>
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">

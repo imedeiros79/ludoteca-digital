@@ -198,7 +198,7 @@ export default async function Dashboard({
                                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                                     <div className="text-center md:text-left flex-1">
                                         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-                                            Libere +1.400 Jogos Educativos! 🚀
+                                            Libere +1.431 Jogos Educativos! 🚀
                                         </h2>
                                         <p className="text-purple-100 text-lg mb-6 max-w-xl">
                                             Você está vendo apenas uma prévia. Assine agora e tenha acesso ilimitado ao maior acervo pedagógico do Brasil por menos de um lanche por mês.

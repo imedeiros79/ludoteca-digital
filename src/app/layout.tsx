@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Ludoteca Digital - O Maior Acervo de Objetos de Aprendizagem',
-  description: 'Acesse 1.442 recursos educativos interativos alinhados à BNCC.',
+  description: 'Acesse 1.431 recursos educativos interativos alinhados à BNCC.',
 };
 
 export default function RootLayout({
