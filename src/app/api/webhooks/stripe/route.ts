@@ -3,9 +3,13 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { PrismaClient } from '@prisma/client';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover',
-});
+export const dynamic = 'force-dynamic';
+
+function getStripe() {
+    return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2026-01-28.clover',
+    });
+}
 
 const prisma = new PrismaClient();
 
@@ -19,6 +23,7 @@ export async function POST(req: Request) {
         if (!process.env.STRIPE_WEBHOOK_SECRET) {
             throw new Error('STRIPE_WEBHOOK_SECRET is missing');
         }
+        const stripe = getStripe();
         event = stripe.webhooks.constructEvent(
             body,
             signature,
@@ -31,6 +36,7 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (event.type === 'checkout.session.completed') {
+        const stripe = getStripe();
         const subscription = await stripe.subscriptions.retrieve(
             session.subscription as string
         );
@@ -51,6 +57,7 @@ export async function POST(req: Request) {
     }
 
     if (event.type === 'invoice.payment_succeeded') {
+        const stripe = getStripe();
         const subscription = await stripe.subscriptions.retrieve(
             session.subscription as string
         );

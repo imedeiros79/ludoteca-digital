@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@/utils/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover',
-});
+export const dynamic = 'force-dynamic';
+
+function getStripe() {
+    return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2026-01-28.clover',
+    });
+}
 
 export async function POST(req: Request) {
     try {
@@ -23,6 +27,7 @@ export async function POST(req: Request) {
         // Para simplificar MVP, vamos deixar o Stripe criar um novo ou usar email se bater.
         // Mas para webhook funcionar bem com nosso user, passamos metadata.
 
+        const stripe = getStripe();
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card', 'boleto'],
             line_items: [
