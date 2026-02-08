@@ -6,6 +6,7 @@ import Filters from '@/components/Filters';
 import GameCard from '@/components/GameCard';
 import prisma from '@/lib/prisma';
 import { createClient } from '@/utils/supabase/server';
+import { ManageSubscriptionButton } from './components/ManageSubscriptionButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -142,6 +143,10 @@ export default async function Dashboard({
                 </div>
 
                 <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6 mr-4 border-r border-gray-100 pr-6">
+                        <ManageSubscriptionButton />
+                    </div>
+
                     <div className="flex items-center gap-3">
                         <div className="text-right hidden md:block">
                             <div className="text-xs font-bold text-gray-900">{dbUser?.email}</div>
@@ -201,7 +206,7 @@ export default async function Dashboard({
                                                 Assinar Agora
                                                 <ArrowRight size={20} />
                                             </Link>
-                                            <a href="https://wa.me/5531972198551" target="_blank" className="px-8 py-4 bg-purple-600/50 border border-purple-400 text-white rounded-xl font-bold text-lg hover:bg-purple-600/70 transition-all backdrop-blur-sm">
+                                            <a href="https://wa.me/5531972198551" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-purple-600/50 border border-purple-400 text-white rounded-xl font-bold text-lg hover:bg-purple-600/70 transition-all backdrop-blur-sm">
                                                 Falar com Suporte
                                             </a>
                                         </div>
