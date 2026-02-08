@@ -1,3 +1,4 @@
+// Build trigger: Ensure environment variables are synchronized
 import { createBrowserClient } from '@supabase/ssr'
 
 export function createClient() {
