@@ -40,12 +40,12 @@ export default function SubscribeButton({ priceId, children, className }: Subscr
                 body: JSON.stringify({ priceId }),
             });
 
-            const { sessionId } = await response.json();
-            const stripe = await stripePromise;
+            const { url } = await response.json();
 
-            if (stripe) {
-                const { error } = await stripe.redirectToCheckout({ sessionId });
-                if (error) console.error(error);
+            if (url) {
+                window.location.href = url;
+            } else {
+                throw new Error('URL de checkout não encontrada');
             }
         } catch (error) {
             console.error('Error:', error);

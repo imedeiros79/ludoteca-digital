@@ -40,7 +40,7 @@ export async function POST(req: Request) {
             },
         });
 
-        return NextResponse.json({ sessionId: session.id });
+        return NextResponse.json({ sessionId: session.id, url: session.url });
     } catch (err) {
         console.error(err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
