@@ -26,6 +26,17 @@ export default async function PlayerPage({ params }: Props) {
         redirect('/login');
     }
 
+    // 2. Verificar Status VIP no Prisma
+    const dbUser = await prisma.user.findUnique({
+        where: { email: user.email! },
+    });
+
+    const isVIP = dbUser?.subscriptionStatus === 'active' || dbUser?.email === 'imedeiros@outlook.com';
+
+    if (!isVIP) {
+        redirect('/#precos');
+    }
+
     const game = await prisma.item.findUnique({
         where: { id },
     });
