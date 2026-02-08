@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: 'Acesse 1.431 recursos educativos interativos alinhados à BNCC.',
 };
 
+import SessionGuard from '@/components/SessionGuard';
+
 export default function RootLayout({
   children,
 }: {
@@ -16,7 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <SessionGuard />
+      </body>
     </html>
   );
 }

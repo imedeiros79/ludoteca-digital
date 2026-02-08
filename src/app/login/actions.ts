@@ -77,3 +77,21 @@ export async function signUpAction(data: SignUpData) {
 
     return { success: true };
 }
+
+export async function updateSessionAction(sessionId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { error: 'Não autenticado' };
+
+    try {
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { currentSessionId: sessionId } as any
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao atualizar sessão:', error);
+        return { error: 'Falha ao registrar sessão' };
+    }
+}

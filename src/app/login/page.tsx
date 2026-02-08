@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Gamepad2, Loader2, Mail, Lock, ArrowRight, User, Phone, FileText } from 'lucide-react'
-import { signUpAction } from './actions'
+import { signUpAction, updateSessionAction } from './actions'
 
 function LoginContent() {
     const [email, setEmail] = useState('')
@@ -41,6 +41,12 @@ function LoginContent() {
             .replace(/(-\d{4})\d+?$/, '$1');
     };
 
+    const registerSession = async () => {
+        const sessionId = crypto.randomUUID();
+        localStorage.setItem('ludoteca_session_id', sessionId);
+        await updateSessionAction(sessionId);
+    }
+
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -67,6 +73,7 @@ function LoginContent() {
                 // Tenta logar automaticamente
                 const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
                 if (!signInError) {
+                    await registerSession();
                     router.push(next || '/dashboard')
                     router.refresh()
                 } else {
@@ -80,6 +87,9 @@ function LoginContent() {
                     password,
                 })
                 if (error) throw error
+
+                await registerSession();
+
                 router.push(next || '/dashboard')
                 router.refresh()
             }

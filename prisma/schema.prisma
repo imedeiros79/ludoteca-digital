@@ -15,6 +15,7 @@ model User {
   image              String?
   stripeCustomerId   String?
   asaasCustomerId    String?
+  currentSessionId   String?
   subscriptionStatus String?  @default("inactive")
   cpfCnpj            String?
   phone              String?
