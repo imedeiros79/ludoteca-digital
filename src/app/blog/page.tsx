@@ -2,13 +2,15 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, Calendar } from 'lucide-react';
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Blog Ludoteca Digital | Dicas e Recursos Educativos',
     description: 'Artigos sobre como usar tecnologia na educação, BNCC e muito mais.',
 };
 
 export default async function BlogPage() {
-    const posts = await prisma.post.findMany({
+    const posts = await (prisma as any).post.findMany({
         where: { published: true },
         orderBy: { createdAt: 'desc' },
     });
