@@ -39,14 +39,15 @@ export async function GET(request: Request) {
 
         const result = JSON.parse(completion.choices[0]?.message?.content || "{}");
 
-        const post = await prisma.post.create({
+        const keywords = tema.split(' ').join(',');
+        const post = await (prisma as any).post.create({
             data: {
                 title: result.title,
                 slug: `${result.slug}-${Date.now()}`,
                 description: result.description,
                 content: result.content,
                 published: true,
-                imageUrl: `https://images.unsplash.com/photo-1497633762265-9a177c8098a2?q=80&w=1200&auto=format&fit=crop`
+                imageUrl: `https://source.unsplash.com/featured/1200x675?education,${keywords},classroom`
             }
         });
 

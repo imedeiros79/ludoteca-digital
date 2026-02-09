@@ -50,14 +50,15 @@ async function generateBlogPost() {
             throw new Error('IA retornou conteúdo incompleto');
         }
 
+        const keywords = tema.split(' ').join(',');
         const post = await prisma.post.create({
             data: {
                 title: result.title,
                 slug: result.slug + '-' + Date.now(),
                 description: result.description,
                 content: result.content,
-                published: true, // Já publica para o usuário ver
-                imageUrl: `https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop` // Imagem genérica de educação
+                published: true,
+                imageUrl: `https://source.unsplash.com/featured/1200x675?education,${keywords},school`
             }
         });
 

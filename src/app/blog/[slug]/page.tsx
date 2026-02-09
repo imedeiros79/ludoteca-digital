@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-    const post = await prisma.post.findUnique({
-        where: { slug: params.slug },
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const post = await (prisma as any).post.findUnique({
+        where: { slug },
     });
 
     if (!post) return { title: 'Post não encontrado' };
@@ -22,9 +23,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-    const post = await prisma.post.findUnique({
-        where: { slug: params.slug },
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const post = await (prisma as any).post.findUnique({
+        where: { slug },
     });
 
     if (!post) notFound();
