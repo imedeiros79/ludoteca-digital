@@ -46,22 +46,22 @@ export default async function Home() {
             alt="Banner Educativo"
             className="w-full h-full object-cover"
           />
-          {/* Overlay para legibilidade (UX) */}
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] bg-gradient-to-b from-white/90 via-white/80 to-white"></div>
+          {/* Overlay Refinado: Reduzido para 25% para máxima visibilidade da imagem, com gradiente suave */}
+          <div className="absolute inset-0 bg-white/25 bg-gradient-to-b from-white/10 via-white/40 to-gray-50"></div>
         </div>
 
         <div className="container mx-auto text-center max-w-4xl relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100/50 text-purple-700 text-sm font-medium mb-8 backdrop-blur-sm border border-purple-200">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-600/10 text-purple-800 text-sm font-bold mb-8 backdrop-blur-md border border-purple-200/50">
             <Star size={16} className="fill-purple-700" />
             <span>O maior acervo do Brasil</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gray-900 drop-shadow-sm">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gray-900 drop-shadow-[0_2px_10px_rgba(255,255,255,0.8)]">
             Transforme suas aulas com <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-600">
               1.431 Jogos Educativos
             </span>
           </h1>
-          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl text-gray-800 mb-10 max-w-2xl mx-auto leading-relaxed font-bold drop-shadow-[0_1px_5px_rgba(255,255,255,0.5)]">
             Engaje seus alunos com objetos de aprendizagem interativos HTML5,
             totalmente alinhados à BNCC. A ferramenta definitiva para professores inovadores.
           </p>
