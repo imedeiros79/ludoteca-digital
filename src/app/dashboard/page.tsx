@@ -19,22 +19,52 @@ export default async function Dashboard({
         page?: string;
     }>;
 }) {
-    // 1. Verificar Usuário no Supabase
-    const supabase = await createClient();
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    // 1. Verificar Usuário no Supabase e Banco de Dados
+    let dbUser: any = null;
+    let isVIP = false;
 
-    // 2. Garantir usuário no Prisma e pegar status
-    const dbUser = authUser ? await prisma.user.upsert({
-        where: { email: authUser.email! },
-        update: {},
-        create: {
-            id: authUser.id,
-            email: authUser.email!,
-            subscriptionStatus: 'inactive',
+    try {
+        console.log('[Dashboard] Buscando usuário no Supabase...');
+        const supabase = await createClient();
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !authUser) {
+            console.error('[Dashboard] Erro ou usuário não encontrado no Supabase:', authError);
+            throw new Error('Usuário não autenticado');
         }
-    }) : null;
 
-    const isVIP = dbUser?.subscriptionStatus === 'active' || dbUser?.email === 'imedeiros@outlook.com';
+        console.log('[Dashboard] Sincronizando usuário no Prisma:', authUser.email);
+        dbUser = await prisma.user.upsert({
+            where: { email: authUser.email! },
+            update: {},
+            create: {
+                id: authUser.id,
+                email: authUser.email!,
+                subscriptionStatus: 'inactive',
+            }
+        });
+
+        isVIP = dbUser?.subscriptionStatus === 'active' || dbUser?.email === 'imedeiros@outlook.com';
+    } catch (error: any) {
+        console.error('[Dashboard] Erro Crítico na Inicialização:', error);
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+                    <div className="text-red-500 mb-4 text-5xl">⚠️</div>
+                    <h1 className="text-xl font-bold text-gray-900 mb-2">Erro de Inicialização</h1>
+                    <p className="text-gray-600 mb-4">
+                        Ocorreu um problema ao carregar seu perfil. Isso pode ser instabilidade temporária no banco de dados.
+                    </p>
+                    <code className="block bg-gray-100 p-2 rounded text-xs text-left overflow-auto mb-4">
+                        {error.message || 'Erro desconhecido'}
+                    </code>
+                    <a href="/dashboard" className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg font-medium">
+                        Tentar Novamente
+                    </a>
+                </div>
+            </div>
+        );
+    }
 
     // Await params in case of Next.js 15+
     const params = await searchParams;
@@ -57,7 +87,7 @@ export default async function Dashboard({
                 ]
             } : {},
             // Filters
-            yearFilter ? { year: { contains: yearFilter } } : {}, // Changed to contains for smart filtering
+            yearFilter ? { year: { contains: yearFilter } } : {},
             subjectFilter ? { subject: subjectFilter } : {},
         ]
     };
@@ -65,30 +95,41 @@ export default async function Dashboard({
     // Get Data and Count
     let games: any[] = [];
     let totalCount = 0;
+    let validSubjects: string[] = [];
 
     try {
-        const [gamesRes, countRes] = await Promise.all([
+        console.log('[Dashboard] Buscando jogos e contagem...');
+        const [gamesRes, countRes, allSubjects] = await Promise.all([
             prisma.item.findMany({
                 where: whereCondition,
-                take: isVIP ? itemsPerPage : 3, // Somente 3 jogos se não for VIP
+                take: isVIP ? itemsPerPage : 3,
                 skip: skip,
                 orderBy: { createdAt: 'desc' },
             }),
-            prisma.item.count({ where: whereCondition })
+            prisma.item.count({ where: whereCondition }),
+            prisma.item.findMany({
+                select: { subject: true },
+                distinct: ['subject'],
+                orderBy: { subject: 'asc' }
+            })
         ]);
+
         games = gamesRes;
-        // Se não for VIP, mostra o menor entre o total real e 3. 
-        // Se countRes for 0, mostra 0. Se for 100, mostra 3.
         totalCount = isVIP ? countRes : Math.min(countRes, 3);
+        validSubjects = allSubjects
+            .map(i => i.subject)
+            .filter((s): s is string => !!s && s.length > 0);
+
+        console.log(`[Dashboard] Busca concluída. Jogos: ${games.length}, VIP: ${isVIP}`);
     } catch (error: any) {
-        console.error('Erro ao carregar Dashboard:', error);
+        console.error('Erro ao carregar Dados do Dashboard:', error);
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
                 <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
                     <div className="text-red-500 mb-4 text-5xl">⚠️</div>
                     <h1 className="text-xl font-bold text-gray-900 mb-2">Erro de Conexão</h1>
                     <p className="text-gray-600 mb-4">
-                        Não conseguimos conectar ao banco de dados. Verifique se todas as chaves (DATABASE_URL e DIRECT_URL) estão corretas na Vercel.
+                        Não conseguimos conectar ao banco de dados para buscar os jogos.
                     </p>
                     <code className="block bg-gray-100 p-2 rounded text-xs text-left overflow-auto mb-4">
                         {error.message || 'Erro desconhecido'}
@@ -102,17 +143,6 @@ export default async function Dashboard({
     }
 
     const totalPages = Math.ceil(totalCount / itemsPerPage);
-
-    // Get distinct subjects only
-    const allSubjects = await prisma.item.findMany({
-        select: { subject: true },
-        distinct: ['subject'],
-        orderBy: { subject: 'asc' }
-    });
-
-    const validSubjects = allSubjects
-        .map(i => i.subject)
-        .filter((s): s is string => !!s && s.length > 0);
 
     // Construct plain object for query params to avoid symbol error
     const getQueryParams = (newPage: number) => {
