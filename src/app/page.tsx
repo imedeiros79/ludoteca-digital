@@ -26,6 +26,7 @@ export default async function Home() {
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
             <a href="#vitrine" className="hover:text-purple-600 transition-colors">Jogos</a>
+            <Link href="/blog" className="hover:text-purple-600 transition-colors">Blog</Link>
             <a href="#precos" className="hover:text-purple-600 transition-colors">Planos</a>
             <Link href="/login" className="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-full transition-colors">
               Entrar
@@ -327,6 +328,51 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Structured Data (SEO) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Como recebo o acesso?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "O acesso é imediato após a confirmação do pagamento. Você receberá os dados por e-mail e poderá usar o sistema imediatamente."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Os jogos funcionam no celular?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sim! Todos os nossos jogos são desenvolvidos em HTML5, o que garante funcionamento perfeito em celulares, tablets e computadores."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Posso cancelar a assinatura?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sim, você pode cancelar a qualquer momento diretamente pelo painel do usuário, sem burocracia ou taxas de cancelamento."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Preciso baixar os jogos?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Não, todo o nosso acervo é online. Isso garante que você sempre tenha a versão mais atualizada e não ocupe espaço no seu dispositivo."
+                }
+              }
+            ]
+          })
+        }}
+      />
 
       {/* Footer */}
       <footer className="bg-gray-50 border-t border-gray-200 py-12">
