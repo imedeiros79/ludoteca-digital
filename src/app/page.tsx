@@ -65,7 +65,7 @@ export default async function Home() {
 
           <div className="mt-16 pt-8 border-t border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { label: 'Recursos', value: '1.442+' },
+              { label: 'Recursos', value: '1.431' },
               { label: 'Matérias', value: 'Todas' },
               { label: 'Alinhamento', value: 'BNCC' },
               { label: 'Uso', value: 'Ilimitado' },
@@ -75,6 +75,40 @@ export default async function Home() {
                 <div className="text-sm text-gray-500 uppercase tracking-wider font-medium mt-1">{stat.label}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+      {/* Benefícios Rápidos */}
+      <section className="py-12 bg-white border-y border-gray-100">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex items-start gap-4 p-6 rounded-2xl bg-purple-50/50">
+              <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center text-white shrink-0">
+                <CheckCircle size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Pronto para Usar</h3>
+                <p className="text-gray-600 text-sm">Economize horas de planejamento com atividades prontas e testadas.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50">
+              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0">
+                <ShieldCheck size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">100% BNCC</h3>
+                <p className="text-gray-600 text-sm">Alinhamento completo com os códigos da Base Nacional Comum Curricular.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 p-6 rounded-2xl bg-green-50/50">
+              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white shrink-0">
+                <Gamepad2 size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Multiplataforma</h3>
+                <p className="text-gray-600 text-sm">Funciona perfeitamente em computadores, tablets, celulares e lousas digitais.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -128,6 +162,48 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      {/* Depoimentos */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">O que dizem os professores</h2>
+            <p className="text-gray-600">Junte-se a milhares de educadores que já transformaram suas salas de aula.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                text: "A Ludoteca mudou minha forma de ensinar. Os alunos ficam super engajados e eu economizo muito tempo de planejamento!",
+                author: "Profa. Carla Silva",
+                role: "Ensino Fundamental I"
+              },
+              {
+                text: "Excelente variedade de jogos. O alinhamento com a BNCC facilita muito o meu relatório pedagógico no final do mês.",
+                author: "Prof. Ricardo Santos",
+                role: "Matemática e Ciências"
+              },
+              {
+                text: "Melhor investimento que fiz este ano. Os jogos rodam liso no tablet e na lousa digital da escola.",
+                author: "Profa. Mariana Lima",
+                role: "Educação Infantil"
+              }
+            ].map((d, i) => (
+              <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-700 relative">
+                <div className="text-purple-300 absolute top-4 left-4 text-4xl leading-none">"</div>
+                <p className="relative z-10 mb-6">{d.text}</p>
+                <div className="not-italic flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
+                    {d.author[0]}
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900 text-sm">{d.author}</div>
+                    <div className="text-xs text-gray-500">{d.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Pricing */}
       <section id="precos" className="py-20 bg-gray-900 text-white">
@@ -148,7 +224,7 @@ export default async function Home() {
                 <span className="text-gray-400">/mês</span>
               </div>
               <ul className="space-y-4 mb-8 text-gray-300">
-                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Acesso a 1.442 Jogos</li>
+                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Acesso a 1.431 Jogos</li>
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Filtros por BNCC</li>
                 <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Cancele quando quiser</li>
               </ul>
@@ -189,6 +265,54 @@ export default async function Home() {
 
           <div className="mt-12 text-center flex items-center justify-center gap-2 text-gray-400 text-sm">
             <ShieldCheck size={16} /> Pagamento 100% seguro via Stripe
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Perguntas Frequentes</h2>
+            <p className="text-gray-600">Tudo o que você precisa saber sobre a Ludoteca Digital.</p>
+          </div>
+          <div className="space-y-6">
+            {[
+              {
+                q: "Como recebo o acesso?",
+                a: "O acesso é imediato após a confirmação do pagamento. Você receberá os dados por e-mail e poderá usar o sistema imediatamente."
+              },
+              {
+                q: "Os jogos funcionam no celular?",
+                a: "Sim! Todos os nossos jogos são desenvolvidos em HTML5, o que garante funcionamento perfeito em celulares, tablets e computadores."
+              },
+              {
+                q: "Posso cancelar a assinatura?",
+                a: "Sim, você pode cancelar a qualquer momento diretamente pelo painel do usuário, sem burocracia ou taxas de cancelamento."
+              },
+              {
+                q: "Preciso baixar os jogos?",
+                a: "Não, todo o nosso acervo é online. Isso garante que você sempre tenha a versão mais atualizada e não ocupe espaço no seu dispositivo."
+              }
+            ].map((faq, i) => (
+              <div key={i} className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                <h3 className="font-bold text-gray-900 mb-2">{faq.q}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 bg-purple-50 p-8 rounded-3xl text-center border border-purple-100">
+            <h3 className="text-xl font-bold text-purple-900 mb-2">Ainda tem dúvidas?</h3>
+            <p className="text-purple-700 mb-6">Nossa equipe de suporte está pronta para te ajudar no WhatsApp.</p>
+            <a
+              href="https://wa.me/5531972198551"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-lg shadow-green-200"
+            >
+              <MessageCircle size={20} /> Falar com Consultor
+            </a>
           </div>
         </div>
       </section>
