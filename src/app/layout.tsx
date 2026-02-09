@@ -28,6 +28,9 @@ export const metadata: Metadata = {
     locale: 'pt_BR',
     type: 'website',
   },
+  verification: {
+    google: 'eg4EWRYu_y_1lwRF6im07bDLGlLhAtxqTg12NnLuSbs',
+  },
   twitter: {
     card: 'summary_large_image',
     title: 'Ludoteca Digital | 1.431 Jogos Educativos BNCC',
