@@ -38,19 +38,30 @@ export default async function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="container mx-auto text-center max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 text-purple-700 text-sm font-medium mb-8 animate-fade-in-up">
+      <section className="relative pt-32 pb-20 px-4 overflow-hidden min-h-[80vh] flex items-center">
+        {/* Imagem de Fundo (Banner) */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/banner.png"
+            alt="Banner Educativo"
+            className="w-full h-full object-cover"
+          />
+          {/* Overlay para legibilidade (UX) */}
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] bg-gradient-to-b from-white/90 via-white/80 to-white"></div>
+        </div>
+
+        <div className="container mx-auto text-center max-w-4xl relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100/50 text-purple-700 text-sm font-medium mb-8 backdrop-blur-sm border border-purple-200">
             <Star size={16} className="fill-purple-700" />
             <span>O maior acervo do Brasil</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gray-900">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gray-900 drop-shadow-sm">
             Transforme suas aulas com <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500">
               1.431 Jogos Educativos
             </span>
           </h1>
-          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
             Engaje seus alunos com objetos de aprendizagem interativos HTML5,
             totalmente alinhados à BNCC. A ferramenta definitiva para professores inovadores.
           </p>
@@ -58,19 +69,19 @@ export default async function Home() {
             <Link href="#precos" className="w-full sm:w-auto px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold text-lg hover:bg-purple-700 transition-all shadow-xl shadow-purple-200 flex items-center justify-center gap-2">
               Começar Agora <ArrowRight size={20} />
             </Link>
-            <a href="#vitrine" className="w-full sm:w-auto px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold text-lg hover:border-purple-200 hover:bg-purple-50 transition-all flex items-center justify-center">
+            <a href="#vitrine" className="w-full sm:w-auto px-8 py-4 bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-700 rounded-xl font-semibold text-lg hover:border-purple-200 hover:bg-white transition-all flex items-center justify-center">
               Ver Exemplos
             </a>
           </div>
 
-          <div className="mt-16 pt-8 border-t border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="mt-16 pt-8 border-t border-gray-200/50 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { label: 'Recursos', value: '1.431' },
               { label: 'Matérias', value: 'Todas' },
               { label: 'Alinhamento', value: 'BNCC' },
               { label: 'Uso', value: 'Ilimitado' },
             ].map((stat, i) => (
-              <div key={i}>
+              <div key={i} className="backdrop-blur-sm bg-white/30 p-4 rounded-2xl border border-white/50">
                 <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
                 <div className="text-sm text-gray-500 uppercase tracking-wider font-medium mt-1">{stat.label}</div>
               </div>
