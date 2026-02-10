@@ -4,6 +4,12 @@ import Image from 'next/image';
 import { Gamepad2, Star, ArrowRight } from 'lucide-react';
 import prisma from '@/lib/prisma';
 
+export const metadata = {
+  alternates: {
+    canonical: '/',
+  },
+};
+
 // Importações Dinâmicas (Lazy Loading) para o Mobile voar
 const Benefits = dynamic(() => import('@/components/landing/Benefits'));
 const GameShowcase = dynamic(() => import('@/components/landing/GameShowcase'));

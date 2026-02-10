@@ -8,6 +8,9 @@ export const revalidate = 3600;
 export const metadata = {
     title: 'Blog Ludoteca Digital | Dicas e Recursos Educativos',
     description: 'Artigos sobre como usar tecnologia na educação, BNCC e muito mais.',
+    alternates: {
+        canonical: '/blog',
+    },
 };
 
 export default async function BlogPage() {

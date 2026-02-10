@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://ludoteca-digital.vercel.app'),
   alternates: {
-    canonical: '/',
+    // Definir canonical individualmente por página para evitar erro de SEO
   },
   openGraph: {
     title: 'Ludoteca Digital | Transforme suas aulas com Jogos Interativos',
