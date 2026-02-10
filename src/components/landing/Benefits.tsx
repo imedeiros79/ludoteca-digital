@@ -4,6 +4,7 @@ export default function Benefits() {
     return (
         <section className="py-12 bg-white border-y border-gray-100">
             <div className="container mx-auto px-4">
+                <h2 className="sr-only">Nossos diferenciais e benefícios</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="flex items-start gap-4 p-6 rounded-2xl bg-purple-50/50">
                         <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center text-white shrink-0">

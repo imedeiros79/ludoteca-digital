@@ -43,7 +43,7 @@ export default function FAQ() {
                         href="https://wa.me/5531972198551"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-8 py-4 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-lg shadow-green-200"
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200"
                     >
                         <MessageCircle size={20} /> Falar com Consultor
                     </a>
