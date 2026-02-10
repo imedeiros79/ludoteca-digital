@@ -46,6 +46,7 @@ export default async function BlogPage() {
                                                 alt={post.title}
                                                 fill
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                sizes="(max-width: 768px) 100vw, 50vw"
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-gray-300">Sem imagem</div>

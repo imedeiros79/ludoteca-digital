@@ -49,6 +49,7 @@ export default async function Home() {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
           {/* Overlay Refinado: Reduzido para 25% para máxima visibilidade da imagem, com gradiente suave */}
           <div className="absolute inset-0 bg-white/25 bg-gradient-to-b from-white/10 via-white/40 to-gray-50"></div>
@@ -149,6 +150,7 @@ export default async function Home() {
                       alt={game.title}
                       fill
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (
                     <Gamepad2 size={48} className="text-gray-400 group-hover:text-purple-500 transition-colors" />
