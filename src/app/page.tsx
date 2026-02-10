@@ -1,8 +1,16 @@
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Gamepad2, Star, CheckCircle, ArrowRight, ShieldCheck, MessageCircle } from 'lucide-react';
+import { Gamepad2, Star, ArrowRight } from 'lucide-react';
 import prisma from '@/lib/prisma';
-import SubscribeButton from '@/components/SubscribeButton';
+
+// Importações Dinâmicas (Lazy Loading) para o Mobile voar
+const Benefits = dynamic(() => import('@/components/landing/Benefits'));
+const GameShowcase = dynamic(() => import('@/components/landing/GameShowcase'));
+const Testimonials = dynamic(() => import('@/components/landing/Testimonials'));
+const Pricing = dynamic(() => import('@/components/landing/Pricing'));
+const FAQ = dynamic(() => import('@/components/landing/FAQ'));
+const Footer = dynamic(() => import('@/components/landing/Footer'));
 
 export default async function Home() {
   // Buscar 6 jogos reais para a vitrine
@@ -13,7 +21,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans selection:bg-purple-500 selection:text-white">
-      {/* ... rest of the component ... */}
       {/* Header / Nav */}
       <header className="fixed w-full bg-white/80 backdrop-blur-md border-b border-gray-100 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -39,7 +46,7 @@ export default async function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section - MANTIDO NO ARQUIVO PARA LCP RÁPIDO */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden min-h-[80vh] flex items-center">
         {/* Imagem de Fundo (Banner) */}
         <div className="absolute inset-0 z-0">
@@ -94,248 +101,15 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      {/* Benefícios Rápidos */}
-      <section className="py-12 bg-white border-y border-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-start gap-4 p-6 rounded-2xl bg-purple-50/50">
-              <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center text-white shrink-0">
-                <CheckCircle size={24} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">Pronto para Usar</h3>
-                <p className="text-gray-600 text-sm">Economize horas de planejamento com atividades prontas e testadas.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50">
-              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0">
-                <ShieldCheck size={24} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">100% BNCC</h3>
-                <p className="text-gray-600 text-sm">Alinhamento completo com os códigos da Base Nacional Comum Curricular.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-6 rounded-2xl bg-green-50/50">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white shrink-0">
-                <Gamepad2 size={24} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">Multiplataforma</h3>
-                <p className="text-gray-600 text-sm">Funciona perfeitamente em computadores, tablets, celulares e lousas digitais.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Vitrine Preview */}
-      <section id="vitrine" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Diversão que Ensina</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Nossa biblioteca cobre desde a Educação Infantil até o Ensino Médio,
-              com jogos de Matemática, Português, Ciências e muito mais.
-            </p>
-          </div>
+      {/* Seções Carregadas Dinamicamente (Lazy Loading) */}
+      <Benefits />
+      <GameShowcase games={showcaseGames} />
+      <Testimonials />
+      <Pricing />
+      <FAQ />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {showcaseGames.map((game) => (
-              <div key={game.id} className="group relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                <div className="aspect-video bg-gray-200 group-hover:bg-purple-100 transition-colors flex items-center justify-center relative">
-                  {game.imageUrl ? (
-                    <Image
-                      src={game.imageUrl}
-                      alt={game.title}
-                      fill
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <Gamepad2 size={48} className="text-gray-400 group-hover:text-purple-500 transition-colors" />
-                  )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-medium">{game.subject || 'Pedagógico'}</span>
-                    <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-medium">{game.year || 'EF'}</span>
-                  </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-purple-600 transition-colors line-clamp-1">
-                    {game.title}
-                  </h3>
-                  <p className="text-gray-500 text-sm mb-4 line-clamp-2">
-                    {game.description || 'Atividade interativa para trabalhar conceitos fundamentais de forma lúdica.'}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/login" className="inline-flex items-center gap-2 text-purple-600 font-semibold hover:text-purple-700 transition-colors">
-              Ver biblioteca completa <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
-      {/* Depoimentos */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">O que dizem os professores</h2>
-            <p className="text-gray-600">Junte-se a milhares de educadores que já transformaram suas salas de aula.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                text: "A Ludoteca mudou minha forma de ensinar. Os alunos ficam super engajados e eu economizo muito tempo de planejamento!",
-                author: "Profa. Carla Silva",
-                role: "Ensino Fundamental I"
-              },
-              {
-                text: "Excelente variedade de jogos. O alinhamento com a BNCC facilita muito o meu relatório pedagógico no final do mês.",
-                author: "Prof. Ricardo Santos",
-                role: "Matemática e Ciências"
-              },
-              {
-                text: "Melhor investimento que fiz este ano. Os jogos rodam liso no tablet e na lousa digital da escola.",
-                author: "Profa. Mariana Lima",
-                role: "Educação Infantil"
-              }
-            ].map((d, i) => (
-              <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-700 relative">
-                <div className="text-purple-300 absolute top-4 left-4 text-4xl leading-none">"</div>
-                <p className="relative z-10 mb-6">{d.text}</p>
-                <div className="not-italic flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
-                    {d.author[0]}
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900 text-sm">{d.author}</div>
-                    <div className="text-xs text-gray-500">{d.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section id="precos" className="py-20 bg-gray-900 text-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Investimento Acessível</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Tenha acesso ilimitado a todo o acervo por um valor menor que um lanche.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Mensal */}
-            <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 hover:border-purple-500 transition-all">
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">Mensal</h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold">R$ 19,90</span>
-                <span className="text-gray-400">/mês</span>
-              </div>
-              <ul className="space-y-4 mb-8 text-gray-300">
-                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Acesso a 1.431 Jogos</li>
-                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Filtros por BNCC</li>
-                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-green-400" /> Cancele quando quiser</li>
-              </ul>
-              <SubscribeButton
-                priceId="MENSAL"
-                className="w-full py-4 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-semibold transition-colors flex items-center justify-center"
-              >
-                Assinar Mensal
-              </SubscribeButton>
-            </div>
-
-            {/* Anual */}
-            <div className="bg-gradient-to-b from-purple-900 to-purple-950 rounded-2xl p-8 border border-purple-500 relative transform hover:-translate-y-2 transition-transform duration-300">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-                MAIS POPULAR
-              </div>
-              <h3 className="text-xl font-semibold text-purple-200 mb-2">Anual</h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold text-white">R$ 120,00</span>
-                <span className="text-purple-200">/ano</span>
-              </div>
-              <p className="text-sm text-purple-200 mb-6 bg-purple-800/50 p-2 rounded">
-                Economize R$ 118,80 (equivalente a R$ 10,00/mês)
-              </p>
-              <ul className="space-y-4 mb-8 text-purple-100">
-                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-amber-400" /> Todos os benefícios do Mensal</li>
-                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-amber-400" /> Suporte Prioritário</li>
-                <li className="flex items-center gap-3"><CheckCircle size={20} className="text-amber-400" /> Acesso antecipado a novidades</li>
-              </ul>
-              <SubscribeButton
-                priceId="ANUAL"
-                className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-colors flex items-center justify-center p-4 shadow-xl"
-              >
-                Assinar Anual (Melhor Oferta)
-              </SubscribeButton>
-            </div>
-          </div>
-
-          <div className="mt-12 text-center flex items-center justify-center gap-2 text-gray-400 text-sm">
-            <ShieldCheck size={16} /> Pagamento 100% seguro via Stripe
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Perguntas Frequentes</h2>
-            <p className="text-gray-600">Tudo o que você precisa saber sobre a Ludoteca Digital.</p>
-          </div>
-          <div className="space-y-6">
-            {[
-              {
-                q: "Como recebo o acesso?",
-                a: "O acesso é imediato após a confirmação do pagamento. Você receberá os dados por e-mail e poderá usar o sistema imediatamente."
-              },
-              {
-                q: "Os jogos funcionam no celular?",
-                a: "Sim! Todos os nossos jogos são desenvolvidos em HTML5, o que garante funcionamento perfeito em celulares, tablets e computadores."
-              },
-              {
-                q: "Posso cancelar a assinatura?",
-                a: "Sim, você pode cancelar a qualquer momento diretamente pelo painel do usuário, sem burocracia ou taxas de cancelamento."
-              },
-              {
-                q: "Preciso baixar os jogos?",
-                a: "Não, todo o nosso acervo é online. Isso garante que você sempre tenha a versão mais atualizada e não ocupe espaço no seu dispositivo."
-              }
-            ].map((faq, i) => (
-              <div key={i} className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                <h3 className="font-bold text-gray-900 mb-2">{faq.q}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-16 bg-purple-50 p-8 rounded-3xl text-center border border-purple-100">
-            <h3 className="text-xl font-bold text-purple-900 mb-2">Ainda tem dúvidas?</h3>
-            <p className="text-purple-700 mb-6">Nossa equipe de suporte está pronta para te ajudar no WhatsApp.</p>
-            <a
-              href="https://wa.me/5531972198551"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-lg shadow-green-200"
-            >
-              <MessageCircle size={20} /> Falar com Consultor
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Structured Data (SEO) */}
+      {/* Structured Data (SEO) - Otimizado como JSON estático onde possível */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -380,32 +154,7 @@ export default async function Home() {
         }}
       />
 
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 py-12">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
-            <div className="w-6 h-6 bg-gray-400 rounded flex items-center justify-center text-white">
-              <Gamepad2 size={14} />
-            </div>
-            <span className="font-bold text-gray-600">Ludoteca Digital</span>
-          </div>
-          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mb-8 text-sm text-gray-500">
-            <Link href="/termos" className="hover:text-purple-600 transition-colors">Termos de Uso</Link>
-            <Link href="/privacidade" className="hover:text-purple-600 transition-colors">Política de Privacidade</Link>
-            <a
-              href="https://wa.me/5531972198551"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-purple-600 font-medium hover:text-purple-700 transition-colors"
-            >
-              <MessageCircle size={16} /> Contato WhatsApp
-            </a>
-          </div>
-          <p className="text-xs text-gray-400">
-            &copy; {new Date().getFullYear()} Ludoteca Digital. Todos os direitos reservados.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
