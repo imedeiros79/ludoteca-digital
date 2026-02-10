@@ -39,7 +39,7 @@ export default async function BlogPage() {
                         {posts.map((post: any) => (
                             <article key={post.id} className="group">
                                 <Link href={`/blog/${post.slug}`} className="grid md:grid-cols-2 gap-8 items-center">
-                                    <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
+                                    <div className="relative aspect-video bg-gray-100 rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                                         {post.imageUrl ? (
                                             <Image
                                                 src={post.imageUrl}
