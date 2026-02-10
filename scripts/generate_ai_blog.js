@@ -2,13 +2,13 @@ const { PrismaClient } = require('@prisma/client');
 const Groq = require('groq-sdk');
 const dotenv = require('dotenv');
 
-dotenv.config({ path: 'd:/Antigravity-projetos/aulasssas/ludoteca-digital/.env' });
+dotenv.config(); // Tenta carregar do diretório atual
 
 const prisma = new PrismaClient();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 async function generateBlogPost() {
-    console.log('--- Iniciando Geração de Post com IA ---');
+    console.log('--- Iniciando Geração de Post Manual com IA ---');
 
     if (!process.env.GROQ_API_KEY) {
         console.error('ERRO: GROQ_API_KEY não configurada no .env');
@@ -21,7 +21,10 @@ async function generateBlogPost() {
         'Ciências e Objetos de Aprendizagem',
         'História através de Jogos Digitais',
         'Desenvolvimento Socioemocional e Tecnologia',
-        'BNCC na Prática com Tecnologia'
+        'BNCC na Prática com Tecnologia',
+        'Engajamento Escolar no Século XXI',
+        'O Futuro das Aulas Interativas',
+        'Educação Inclusiva e Ferramentas Digitais'
     ];
 
     const tema = subjects[Math.floor(Math.random() * subjects.length)];
@@ -35,10 +38,9 @@ async function generateBlogPost() {
             }, {
                 role: "user",
                 content: `Crie um artigo detalhado sobre o tema "${tema}".
-        O conteúdo deve ter pelo menos 4 parágrafos, explicar a importância da tecnologia e citar a BNCC.
-        O slug deve ser no formato: titulo-do-post.
-        A descrição deve ser curta para o Google (SEO).
-        Não use markdown de cabeçalho no content, apenas os parágrafos dividos por \n.`
+                O conteúdo deve ter pelo menos 4 parágrafos, explicar a importância da tecnologia e citar a BNCC.
+                O slug deve ser no formato: titulo-do-post.
+                Não use markdown de cabeçalho no content, apenas os parágrafos dividos por \n.`
             }],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" }
@@ -50,7 +52,10 @@ async function generateBlogPost() {
             throw new Error('IA retornou conteúdo incompleto');
         }
 
-        const keywords = tema.split(' ').join(',');
+        // Usar LoremFlickr para maior estabilidade e compatibilidade
+        const randomId = Math.floor(Math.random() * 1000);
+        const randomImage = `https://loremflickr.com/1200/675/education,school,learning?lock=${randomId}`;
+
         const post = await prisma.post.create({
             data: {
                 title: result.title,
@@ -58,7 +63,7 @@ async function generateBlogPost() {
                 description: result.description,
                 content: result.content,
                 published: true,
-                imageUrl: `https://source.unsplash.com/featured/1200x675?education,${keywords},school`
+                imageUrl: randomImage
             }
         });
 

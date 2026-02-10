@@ -14,24 +14,35 @@ export async function GET(request: Request) {
     console.log('--- Iniciando Geração Automática via Cron ---');
 
     const subjects = [
-        'Gamificação na Alfabetização',
-        'Matemática Divertida com Tecnologia',
-        'BNCC e Recursos Digitais',
+        'Matemática e Gamificação',
+        'Alfabetização no Século XXI',
+        'Ciências e Objetos de Aprendizagem',
+        'História através de Jogos Digitais',
+        'Desenvolvimento Socioemocional e Tecnologia',
+        'BNCC na Prática com Tecnologia',
         'Engajamento Escolar no Século XXI',
         'O Futuro das Aulas Interativas',
         'Educação Inclusiva e Ferramentas Digitais'
     ];
 
     const tema = subjects[Math.floor(Math.random() * subjects.length)];
+    console.log(`Tema selecionado para o Cron: ${tema}`);
 
     try {
+        if (!process.env.GROQ_API_KEY) {
+            throw new Error('GROQ_API_KEY não configurada');
+        }
+
         const completion = await groq.chat.completions.create({
             messages: [{
                 role: "system",
-                content: "Você é um especialista em educação, BNCC e gamificação. Crie um artigo de blog JSON com chaves: title, slug, description, content."
+                content: "Você é um especialista em educação brasileira, BNCC e gamificação. Sua tarefa é criar um artigo de blog altamente otimizado para SEO, com tom profissional e acolhedor para professores brasileiros. Responda APENAS em formato JSON puro com as chaves: title, slug, description, content."
             }, {
                 role: "user",
-                content: `Crie um artigo detalhado sobre "${tema}". Use pelo menos 4 parágrafos. Não use markdown de título no content.`
+                content: `Crie um artigo detalhado sobre o tema "${tema}". 
+                O conteúdo deve ter pelo menos 4 parágrafos, explicar a importância da tecnologia e citar a BNCC.
+                O slug deve ser no formato: titulo-do-post (sem acentos).
+                Não use markdown de cabeçalho no content, apenas os parágrafos dividos por \n.`
             }],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" }
@@ -39,7 +50,14 @@ export async function GET(request: Request) {
 
         const result = JSON.parse(completion.choices[0]?.message?.content || "{}");
 
-        const keywords = tema.split(' ').join(',');
+        if (!result.title || !result.content) {
+            throw new Error('IA retornou conteúdo incompleto');
+        }
+
+        // Usar LoremFlickr para maior estabilidade e compatibilidade
+        const randomId = Math.floor(Math.random() * 1000);
+        const randomImage = `https://loremflickr.com/1200/675/education,school,learning?lock=${randomId}`;
+
         const post = await (prisma as any).post.create({
             data: {
                 title: result.title,
@@ -47,13 +65,14 @@ export async function GET(request: Request) {
                 description: result.description,
                 content: result.content,
                 published: true,
-                imageUrl: `https://source.unsplash.com/featured/1200x675?education,${keywords},classroom`
+                imageUrl: randomImage
             }
         });
 
-        return NextResponse.json({ success: true, post: post.title });
+        console.log(`✓ Post do Cron Criado: ${post.title}`);
+        return NextResponse.json({ success: true, post: post.title, slug: post.slug });
     } catch (error: any) {
-        console.error('Falha no Cron:', error.message);
+        console.error('Falha CRÍTICA no Cron:', error.message);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }

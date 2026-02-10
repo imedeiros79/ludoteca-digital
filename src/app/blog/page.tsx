@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Clock, Calendar } from 'lucide-react';
 import prisma from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
     title: 'Blog Ludoteca Digital | Dicas e Recursos Educativos',
@@ -40,7 +41,12 @@ export default async function BlogPage() {
                                 <Link href={`/blog/${post.slug}`} className="grid md:grid-cols-2 gap-8 items-center">
                                     <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                                         {post.imageUrl ? (
-                                            <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <Image
+                                                src={post.imageUrl}
+                                                alt={post.title}
+                                                fill
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-gray-300">Sem imagem</div>
                                         )}

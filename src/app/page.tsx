@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Gamepad2, Star, CheckCircle, ArrowRight, ShieldCheck, MessageCircle } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import SubscribeButton from '@/components/SubscribeButton';
@@ -42,10 +43,12 @@ export default async function Home() {
       <section className="relative pt-32 pb-20 px-4 overflow-hidden min-h-[80vh] flex items-center">
         {/* Imagem de Fundo (Banner) */}
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src="/banner.png"
             alt="Banner Educativo"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            priority
           />
           {/* Overlay Refinado: Reduzido para 25% para máxima visibilidade da imagem, com gradiente suave */}
           <div className="absolute inset-0 bg-white/25 bg-gradient-to-b from-white/10 via-white/40 to-gray-50"></div>
@@ -141,9 +144,10 @@ export default async function Home() {
               <div key={game.id} className="group relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
                 <div className="aspect-video bg-gray-200 group-hover:bg-purple-100 transition-colors flex items-center justify-center relative">
                   {game.imageUrl ? (
-                    <img
+                    <Image
                       src={game.imageUrl}
                       alt={game.title}
+                      fill
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (

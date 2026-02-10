@@ -1,7 +1,10 @@
 import { ArrowLeft, Calendar, Clock, User } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
+
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
@@ -58,7 +61,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
             <div className="container mx-auto px-4 py-16 max-w-3xl">
                 {post.imageUrl && (
-                    <img src={post.imageUrl} alt={post.title} className="w-full aspect-video object-cover rounded-3xl mb-12 shadow-lg" />
+                    <div className="relative w-full aspect-video rounded-3xl mb-12 shadow-lg overflow-hidden">
+                        <Image
+                            src={post.imageUrl}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </div>
                 )}
 
                 <div className="prose prose-purple prose-lg max-w-none text-gray-700 leading-relaxed">
