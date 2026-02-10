@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   },
 };
 
-import SessionGuard from '@/components/SessionGuard';
+import SessionGuardWrapper from '@/components/SessionGuardWrapper';
 
 export default function RootLayout({
   children,
@@ -63,7 +63,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={inter.className}>
         {children}
-        <SessionGuard />
+        <SessionGuardWrapper />
       </body>
     </html>
   );

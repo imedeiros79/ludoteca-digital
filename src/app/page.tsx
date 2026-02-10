@@ -57,6 +57,7 @@ export default async function Home() {
             className="object-cover"
             priority
             sizes="100vw"
+            quality={85}
           />
           {/* Overlay Refinado: Reduzido para 25% para máxima visibilidade da imagem, com gradiente suave */}
           <div className="absolute inset-0 bg-white/25 bg-gradient-to-b from-white/10 via-white/40 to-gray-50"></div>
