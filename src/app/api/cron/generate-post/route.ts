@@ -11,7 +11,7 @@ export async function GET(request: Request) {
         return new Response('Unauthorized', { status: 401 });
     }
 
-    console.log('--- Iniciando Geração Automática via Cron ---');
+    console.log('[CRON] Iniciando Geração Automática...');
 
     const subjects = [
         'Matemática e Gamificação',
@@ -26,53 +26,62 @@ export async function GET(request: Request) {
     ];
 
     const tema = subjects[Math.floor(Math.random() * subjects.length)];
-    console.log(`Tema selecionado para o Cron: ${tema}`);
+    console.log(`[CRON] Tema selecionado: ${tema}`);
 
     try {
         if (!process.env.GROQ_API_KEY) {
+            console.error('[CRON] Erro: GROQ_API_KEY ausente');
             throw new Error('GROQ_API_KEY não configurada');
         }
 
+        console.log('[CRON] Solicitando conteúdo ao Groq (llama-3.3-70b)...');
         const completion = await groq.chat.completions.create({
             messages: [{
                 role: "system",
-                content: "Você é um especialista em educação brasileira, BNCC e gamificação. Sua tarefa é criar um artigo de blog altamente otimizado para SEO, com tom profissional e acolhedor para professores brasileiros. Responda APENAS em formato JSON puro com as chaves: title, slug, description, content."
+                content: "Você é um especialista em educação brasileira. Responda APENAS JSON puro com as chaves: title, slug, description, content. No content, use apenas parágrafos divididos por \\n."
             }, {
                 role: "user",
-                content: `Crie um artigo detalhado sobre o tema "${tema}". 
-                O conteúdo deve ter pelo menos 4 parágrafos, explicar a importância da tecnologia e citar a BNCC.
-                O slug deve ser no formato: titulo-do-post (sem acentos).
-                Não use markdown de cabeçalho no content, apenas os parágrafos dividos por \n.`
+                content: `Artigo detalhado sobre "${tema}" citando a BNCC.`
             }],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" }
         });
 
-        const result = JSON.parse(completion.choices[0]?.message?.content || "{}");
+        const rawJson = completion.choices[0]?.message?.content || "{}";
+        console.log('[CRON] Resposta recebida do Groq');
+
+        let result;
+        try {
+            result = JSON.parse(rawJson);
+        } catch (pErr) {
+            console.error('[CRON] Erro ao parsear JSON da IA:', rawJson);
+            throw new Error('Conteúdo da IA inválido');
+        }
 
         if (!result.title || !result.content) {
+            console.error('[CRON] Conteúdo incompleto retornado:', result);
             throw new Error('IA retornou conteúdo incompleto');
         }
 
-        // Usar LoremFlickr para maior estabilidade e compatibilidade
         const randomId = Math.floor(Math.random() * 1000);
         const randomImage = `https://loremflickr.com/1200/675/education,school,learning?lock=${randomId}`;
 
-        const post = await (prisma as any).post.create({
+        console.log('[CRON] Persistindo no banco de dados...');
+        const post = await prisma.post.create({
             data: {
                 title: result.title,
                 slug: `${result.slug}-${Date.now()}`,
-                description: result.description,
+                description: result.description || '',
                 content: result.content,
                 published: true,
                 imageUrl: randomImage
             }
         });
 
-        console.log(`✓ Post do Cron Criado: ${post.title}`);
-        return NextResponse.json({ success: true, post: post.title, slug: post.slug });
+        console.log(`[CRON] SUCESSO: Post "${post.title}" criado.`);
+        return NextResponse.json({ success: true, post: post.title });
     } catch (error: any) {
-        console.error('Falha CRÍTICA no Cron:', error.message);
+        console.error('[CRON] FALHA CRÍTICA:', error.message);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
