@@ -14,9 +14,15 @@ export const metadata = {
 };
 
 export default async function BlogPage() {
+    const now = new Date();
     const posts = await (prisma as any).post.findMany({
-        where: { published: true },
-        orderBy: { createdAt: 'desc' },
+        where: {
+            published: true,
+            scheduledAt: {
+                lte: now
+            }
+        },
+        orderBy: { scheduledAt: 'desc' },
     });
 
     return (
@@ -57,7 +63,7 @@ export default async function BlogPage() {
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                                            <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
+                                            <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(post.scheduledAt).toLocaleDateString('pt-BR')}</span>
                                             <span className="flex items-center gap-1.5"><Clock size={14} /> 5 min de leitura</span>
                                         </div>
                                         <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">{post.title}</h2>
