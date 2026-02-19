@@ -94,7 +94,10 @@ function LoginContent() {
                 router.refresh()
             }
         } catch (err: any) {
-            setError(err.message || 'Ocorreu um erro. Tente novamente.')
+            console.error('Login error details:', err);
+            // Mostrar detalhes técnicos do erro para debug
+            const detailedError = err?.message || JSON.stringify(err);
+            setError(`Erro: ${detailedError} - (Status: ${err?.status || 'N/A'})`);
         } finally {
             setLoading(false)
         }
