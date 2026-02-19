@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Triggering redeploy to apply environment variables
   async rewrites() {
     return [
       {
