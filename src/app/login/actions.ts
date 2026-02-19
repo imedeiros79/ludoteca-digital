@@ -96,7 +96,7 @@ export async function updateSessionAction(sessionId: string) {
     }
 }
 
-export async function signInAction(data: Pick<SignUpData, 'email' | 'password'>) {
+export async function signInAction(data: Pick<SignUpData, 'email' | 'password'> & { sessionId?: string }) {
     try {
         const supabase = await createClient();
 
@@ -104,7 +104,7 @@ export async function signInAction(data: Pick<SignUpData, 'email' | 'password'>)
             return { error: 'Email e senha são obrigatórios.' };
         }
 
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: authData, error } = await supabase.auth.signInWithPassword({
             email: data.email,
             password: data.password,
         });
@@ -112,6 +112,19 @@ export async function signInAction(data: Pick<SignUpData, 'email' | 'password'>)
         if (error) {
             console.error('SignIn error (Supabase):', error.message);
             return { error: error.message };
+        }
+
+        // Se login Sucesso e temos sessionId, atualizar o banco
+        if (data.sessionId && authData.user) {
+            try {
+                await prisma.user.update({
+                    where: { id: authData.user.id },
+                    data: { currentSessionId: data.sessionId } as any
+                });
+            } catch (dbError) {
+                console.error('Erro não-bloqueante ao atualizar sessão no banco:', dbError);
+                // Não falhar o login por isso
+            }
         }
 
         return { success: true };

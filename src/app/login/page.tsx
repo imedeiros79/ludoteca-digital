@@ -81,17 +81,22 @@ function LoginContent() {
                     setView('signin')
                 }
             } else {
-                // Login via Server Action
+                // Gerar ID de sessão no cliente
+                const sessionId = crypto.randomUUID();
+                localStorage.setItem('ludoteca_session_id', sessionId);
+
+                // Login via Server Action (com atualização de sessão atômica)
                 const result = await signInAction({
                     email,
                     password,
+                    sessionId
                 })
 
                 if (result && result.error) {
                     throw new Error(result.error)
                 }
 
-                await registerSession();
+                // Não precisa mais chamar registerSession() separado, pois já foi feito no signInAction
 
                 router.push(next || '/dashboard')
                 router.refresh()
