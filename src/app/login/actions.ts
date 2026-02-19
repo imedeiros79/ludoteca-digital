@@ -97,20 +97,26 @@ export async function updateSessionAction(sessionId: string) {
 }
 
 export async function signInAction(data: Pick<SignUpData, 'email' | 'password'>) {
-    const supabase = await createClient();
+    try {
+        const supabase = await createClient();
 
-    if (!data.email || !data.password) {
-        return { error: 'Email e senha são obrigatórios.' };
+        if (!data.email || !data.password) {
+            return { error: 'Email e senha são obrigatórios.' };
+        }
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email: data.email,
+            password: data.password,
+        });
+
+        if (error) {
+            console.error('SignIn error (Supabase):', error.message);
+            return { error: error.message };
+        }
+
+        return { success: true };
+    } catch (err: any) {
+        console.error('SignIn unexpected error:', err);
+        return { error: `Erro interno: ${err.message || 'Desconhecido'}` };
     }
-
-    const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-    });
-
-    if (error) {
-        return { error: error.message };
-    }
-
-    return { success: true };
 }
