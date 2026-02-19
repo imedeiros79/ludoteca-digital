@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import {
     Search, ShieldCheck, UserMinus, UserCheck, Trash2,
-    Calendar, Mail, Fingerprint
+    Calendar, Mail, Fingerprint, Key
 } from 'lucide-react';
-import { toggleUserVIP, deleteUser } from './actions';
+import { toggleUserVIP, deleteUser, resetUserPassword } from './actions';
 
 interface User {
     id: string;
@@ -144,6 +144,25 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                                                     {user.subscriptionStatus === 'active' ? <UserMinus size={18} /> : <UserCheck size={18} />}
                                                 </button>
                                             </form>
+
+                                            {/* Reset Password */}
+                                            <button
+                                                onClick={async () => {
+                                                    if (confirm(`Deseja redefinir a senha do usuário ${user.email}? UMA NOVA SENHA SERÁ GERADA.`)) {
+                                                        try {
+                                                            const newPass = await resetUserPassword(user.id);
+                                                            prompt(`Senha alterada com sucesso! Copie a nova senha abaixo:`, newPass);
+                                                        } catch (err) {
+                                                            alert('Erro ao alterar senha.');
+                                                            console.error(err);
+                                                        }
+                                                    }
+                                                }}
+                                                title="Redefinir Senha (Gerar Nova)"
+                                                className="p-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-100 transition-all shadow-sm"
+                                            >
+                                                <Key size={18} />
+                                            </button>
 
                                             {/* Delete User */}
                                             <button

@@ -107,3 +107,29 @@ export async function createUserManually(email: string, name: string, isVip: boo
     revalidatePath('/admin');
     return user;
 }
+
+export async function resetUserPassword(userId: string) {
+    await checkAdmin();
+
+    const { createAdminClient } = await import('@/utils/supabase/admin');
+    const supabaseAdmin = createAdminClient();
+
+    // Gerar senha forte
+    const length = 12;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let newPassword = "";
+    for (let i = 0, n = charset.length; i < length; ++i) {
+        newPassword += charset.charAt(Math.floor(Math.random() * n));
+    }
+
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(
+        userId,
+        { password: newPassword }
+    );
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return newPassword;
+}
