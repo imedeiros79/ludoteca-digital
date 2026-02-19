@@ -95,3 +95,22 @@ export async function updateSessionAction(sessionId: string) {
         return { error: 'Falha ao registrar sessão' };
     }
 }
+
+export async function signInAction(data: Pick<SignUpData, 'email' | 'password'>) {
+    const supabase = await createClient();
+
+    if (!data.email || !data.password) {
+        return { error: 'Email e senha são obrigatórios.' };
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+    });
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    return { success: true };
+}

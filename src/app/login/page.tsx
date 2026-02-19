@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Gamepad2, Loader2, Mail, Lock, ArrowRight, User, Phone, FileText } from 'lucide-react'
-import { signUpAction, updateSessionAction } from './actions'
+import { signUpAction, updateSessionAction, signInAction } from './actions'
 
 function LoginContent() {
     const [email, setEmail] = useState('')
@@ -81,12 +81,15 @@ function LoginContent() {
                     setView('signin')
                 }
             } else {
-                // Login continua via Client por enquanto
-                const { error } = await supabase.auth.signInWithPassword({
+                // Login via Server Action
+                const result = await signInAction({
                     email,
                     password,
                 })
-                if (error) throw error
+
+                if (result && result.error) {
+                    throw new Error(result.error)
+                }
 
                 await registerSession();
 
