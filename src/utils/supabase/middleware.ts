@@ -6,6 +6,12 @@ export async function updateSession(request: NextRequest) {
         request,
     })
 
+    // Evitar cache para garantir que logout funcione imediatamente (back button)
+    supabaseResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    supabaseResponse.headers.set('Pragma', 'no-cache');
+    supabaseResponse.headers.set('Expires', '0');
+    supabaseResponse.headers.set('Surrogate-Control', 'no-store');
+
     // Proteção de rotas: dashboard, jogar, content, checkout e admin
     if (
         request.nextUrl.pathname.startsWith('/dashboard') ||
