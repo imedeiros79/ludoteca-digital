@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CalendarDays, Plus, X, Clock, Users, Gamepad2, BookOpen, Heart, FileText, Trash2, ChevronRight } from 'lucide-react';
+import { CalendarDays, Plus, X, Clock, Users, Gamepad2, BookOpen, FileText, Trash2, ChevronRight, Loader2 } from 'lucide-react';
 import AddToPlanModal from './AddToPlanModal';
 import { removeFromPlan } from '@/app/dashboard/planning-actions';
 import { useRouter } from 'next/navigation';
@@ -168,53 +168,68 @@ function PlanCard({ plan, onRemove, isDeleting }: { plan: PlanItem; onRemove: ()
         : null;
 
     return (
-        <div className="bg-white board border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
-            {imgSrc && (
-                <div className="h-20 bg-gray-100 relative overflow-hidden">
-                    <img src={imgSrc} alt={plan.item?.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                </div>
-            )}
-            <div className="p-3">
-                {plan.timeSlot && (
-                    <div className="flex items-center gap-1 text-xs font-bold text-purple-600 mb-1">
-                        <Clock size={10} /> {plan.timeSlot}
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+            {/* Imagem com botão remover sempre visível no canto */}
+            <div className="h-24 bg-gray-100 relative overflow-hidden flex-shrink-0">
+                {imgSrc ? (
+                    <img src={imgSrc} alt={plan.item?.title} className="w-full h-full object-cover" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                        <Gamepad2 size={24} className="text-gray-300" />
                     </div>
                 )}
-                <div className="flex items-start justify-between gap-1">
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 leading-tight mb-1 truncate">
-                            {plan.item?.title || 'Jogo'}
-                        </p>
-                        <div className="flex flex-col gap-0.5">
-                            <span className="text-[11px] text-gray-500 flex items-center gap-1"><Users size={9} /> {plan.turma}</span>
-                            {plan.item?.subject && <span className="text-[11px] text-gray-400 flex items-center gap-1"><BookOpen size={9} /> {plan.item.subject}</span>}
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                        <button
-                            onClick={onRemove}
-                            disabled={isDeleting}
-                            className="p-1 text-gray-300 hover:text-red-500 transition-colors rounded opacity-0 group-hover:opacity-100"
-                            title="Remover"
-                        >
-                            <X size={12} />
-                        </button>
-                        {plan.item && (
-                            <Link href={`/jogar/${plan.item.id}`} className="p-1 text-gray-300 hover:text-purple-500 transition-colors rounded opacity-0 group-hover:opacity-100" title="Abrir jogo">
-                                <Gamepad2 size={12} />
-                            </Link>
-                        )}
-                    </div>
-                </div>
-                {plan.notes && (
-                    <div className="mt-2 pt-2 border-t border-gray-50">
-                        <p className="text-[11px] text-gray-400 flex items-start gap-1 line-clamp-2">
-                            <FileText size={9} className="flex-shrink-0 mt-0.5" /> {plan.notes}
-                        </p>
+                {/* Botão remover — sempre visível, canto superior direito */}
+                <button
+                    onClick={onRemove}
+                    disabled={isDeleting}
+                    title="Remover do planejamento"
+                    aria-label="Remover aula do planejamento"
+                    className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/50 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                >
+                    {isDeleting
+                        ? <Loader2 size={10} className="animate-spin" />
+                        : <X size={10} />
+                    }
+                </button>
+                {/* Horário sobre a imagem */}
+                {plan.timeSlot && (
+                    <div className="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 backdrop-blur-sm">
+                        <Clock size={9} /> {plan.timeSlot}
                     </div>
                 )}
             </div>
+
+            {/* Info */}
+            <div className="p-3 flex-1 flex flex-col gap-1">
+                <p className="text-sm font-bold text-gray-900 leading-tight line-clamp-2">
+                    {plan.item?.title || 'Atividade'}
+                </p>
+                <p className="text-[11px] text-gray-500 flex items-center gap-1">
+                    <Users size={9} /> {plan.turma}
+                </p>
+                {plan.item?.subject && (
+                    <p className="text-[11px] text-gray-400 flex items-center gap-1">
+                        <BookOpen size={9} /> {plan.item.subject}
+                    </p>
+                )}
+                {plan.notes && (
+                    <p className="text-[11px] text-gray-400 flex items-start gap-1 line-clamp-2 mt-1">
+                        <FileText size={9} className="flex-shrink-0 mt-0.5" /> {plan.notes}
+                    </p>
+                )}
+            </div>
+
+            {/* ✅ Botão Iniciar Aula — SEMPRE visível, nunca escondido */}
+            {plan.item && (
+                <Link
+                    href={`/jogar/${plan.item.id}`}
+                    className="flex items-center justify-center gap-2 mx-3 mb-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold transition-colors"
+                >
+                    <Gamepad2 size={13} />
+                    Iniciar Aula
+                </Link>
+            )}
         </div>
     );
 }
+

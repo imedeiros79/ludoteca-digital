@@ -104,3 +104,30 @@ export async function searchItemsForPlan(query: string) {
     });
     return items;
 }
+
+export async function getSubjectsWithCount() {
+    const subjects = await prisma.item.groupBy({
+        by: ['subject'],
+        _count: { id: true },
+        where: { subject: { not: null } },
+        orderBy: { _count: { id: 'desc' } },
+    });
+    return subjects
+        .filter(s => !!s.subject)
+        .map(s => ({ name: s.subject as string, count: s._count.id }));
+}
+
+export async function getItemsBySubject(subject: string, query?: string) {
+    const where: any = { subject };
+    if (query && query.length >= 2) {
+        where.title = { contains: query, mode: 'insensitive' };
+    }
+    const items = await prisma.item.findMany({
+        where,
+        select: { id: true, title: true, subject: true, year: true, imageUrl: true },
+        orderBy: { title: 'asc' },
+        take: 24,
+    });
+    return items;
+}
+
