@@ -118,27 +118,39 @@ export async function getSubjectsWithCount() {
 }
 
 export async function getYearsBySubject(subject: string) {
+    // Busca TODOS os valores brutos (podem ser compostos, ex: "1º Ano – EF I, 2º Ano – EF I")
     const rows = await prisma.item.findMany({
         where: { subject, year: { not: null } },
         select: { year: true },
-        distinct: ['year'],
-        orderBy: { year: 'asc' },
     });
-    // Normaliza e ordena pelo número inicial do ano escolar
-    const years = rows
-        .map(r => r.year as string)
-        .filter(Boolean)
-        .sort((a, b) => {
-            const numA = parseInt(a.match(/\d+/)?.[0] ?? '99');
-            const numB = parseInt(b.match(/\d+/)?.[0] ?? '99');
-            return numA - numB;
+
+    const yearSet = new Set<string>();
+
+    rows.forEach(r => {
+        if (!r.year) return;
+        // Separa valores compostos por vírgula e ponto-e-vírgula
+        const parts = r.year.split(/[,;]/);
+        parts.forEach(part => {
+            // Pega só a parte antes do traço ("1º Ano – Ensino Fundamental I" → "1º Ano")
+            const short = part.split(/\s*[–\-]\s*/)[0].trim();
+            if (short) yearSet.add(short);
         });
-    return years;
+    });
+
+    // Ordena: números primeiro (1º, 2º...), depois textos (Pré-escola, etc.)
+    return Array.from(yearSet).sort((a, b) => {
+        const numA = parseInt(a.match(/\d+/)?.[0] ?? '99');
+        const numB = parseInt(b.match(/\d+/)?.[0] ?? '99');
+        if (numA !== numB) return numA - numB;
+        return a.localeCompare(b, 'pt-BR');
+    });
 }
 
 export async function getItemsBySubject(subject: string, year?: string, query?: string) {
+    // Usa contains para capturar todos os itens cujo campo year contenha "1º Ano"
+    // independente das variações como "1º Ano – Ensino Fundamental I, 2º Ano..."
     const where: Record<string, unknown> = { subject };
-    if (year) where.year = year;
+    if (year) where.year = { contains: year, mode: 'insensitive' };
     if (query && query.length >= 2) {
         where.title = { contains: query, mode: 'insensitive' };
     }
