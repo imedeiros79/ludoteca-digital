@@ -109,27 +109,38 @@ export async function createUserManually(email: string, name: string, isVip: boo
 }
 
 export async function resetUserPassword(userId: string) {
-    await checkAdmin();
+    try {
+        await checkAdmin();
 
-    const { createAdminClient } = await import('@/utils/supabase/admin');
-    const supabaseAdmin = createAdminClient();
+        if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+            console.error('CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing');
+            throw new Error('Configuração de servidor incompleta (Key ausente).');
+        }
 
-    // Gerar senha forte
-    const length = 12;
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-    let newPassword = "";
-    for (let i = 0, n = charset.length; i < length; ++i) {
-        newPassword += charset.charAt(Math.floor(Math.random() * n));
+        const { createAdminClient } = await import('@/utils/supabase/admin');
+        const supabaseAdmin = createAdminClient();
+
+        // Gerar senha forte
+        const length = 12;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+        let newPassword = "";
+        for (let i = 0, n = charset.length; i < length; ++i) {
+            newPassword += charset.charAt(Math.floor(Math.random() * n));
+        }
+
+        const { error } = await supabaseAdmin.auth.admin.updateUserById(
+            userId,
+            { password: newPassword }
+        );
+
+        if (error) {
+            console.error('Supabase Admin Update Error:', error);
+            throw new Error(error.message);
+        }
+
+        return newPassword;
+    } catch (error: any) {
+        console.error('Reset Password Action Error:', error);
+        throw new Error(error.message || 'Falha interna ao redefinir senha');
     }
-
-    const { error } = await supabaseAdmin.auth.admin.updateUserById(
-        userId,
-        { password: newPassword }
-    );
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    return newPassword;
 }

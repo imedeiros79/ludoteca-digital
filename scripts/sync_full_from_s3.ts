@@ -99,22 +99,55 @@ async function main() {
             if (!hasIndex) return; // Pula se não for jogo
 
             // Achar imagem
-            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.PNG', '.JPG', '.JPEG'];
 
-            // Tenta achar 'thumbnail' ou 'capa' primeiro
+            // Tenta achar 'thumbnail' ou 'capa' primeiro (com variações de caixa)
             let imageKey = contents.find((obj: any) =>
-                obj.Key && imageExtensions.some((ext: string) => obj.Key!.toLowerCase().endsWith(ext)) &&
+                obj.Key && imageExtensions.some((ext: string) => obj.Key!.toLowerCase().endsWith(ext.toLowerCase())) &&
                 (obj.Key!.toLowerCase().includes('thumbnail') || obj.Key!.toLowerCase().includes('capa'))
             )?.Key;
 
-            // Se não, pega qualquer imagem na raiz da pasta
+            // Em último caso busca ícone do appmanifest ou qualquer imagem na raiz
+            if (!imageKey) {
+                imageKey = contents.find((obj: any) => obj.Key?.toLowerCase().includes('icons/icon-512.png'))?.Key;
+            }
+
             if (!imageKey) {
                 imageKey = contents.find((obj: any) => {
                     if (!obj.Key) return false;
                     const relative = obj.Key.replace(prefix, '');
                     const isRootFile = !relative.includes('/');
-                    return isRootFile && imageExtensions.some((ext: string) => obj.Key!.toLowerCase().endsWith(ext));
+                    return isRootFile && imageExtensions.some((ext: string) => obj.Key!.toLowerCase().endsWith(ext.toLowerCase()));
                 })?.Key;
+            }
+
+            // Tentar extrair metadados do info.txt
+            let title = folder.replace(/_/g, ' ');
+            let description = 'Recuperado do S3';
+            let subject = 'Geral';
+            let year = 'Geral';
+
+            const infoFile = contents.find((obj: any) => obj.Key?.toLowerCase().endsWith('info.txt'));
+            if (infoFile && infoFile.Key) {
+                try {
+                    const getInfoCmd = new GetObjectCommand({
+                        Bucket: BUCKET_NAME,
+                        Key: infoFile.Key
+                    });
+                    const infoRes = await s3.send(getInfoCmd);
+                    const infoContent = await streamToString(infoRes.Body);
+
+                    const nameMatch = infoContent.match(/Nome:\s*(.+)/i);
+                    const subjectMatch = infoContent.match(/Componente\/Campo de experiência:\s*(.+)/i);
+                    const stageMatch = infoContent.match(/Etapa Letiva:\s*(.+)/i);
+
+                    if (nameMatch) title = nameMatch[1].trim();
+                    if (subjectMatch) subject = subjectMatch[1].trim();
+                    if (stageMatch) year = stageMatch[1].trim();
+                    description = infoContent.substring(0, 500); // Primeiros 500 caracteres como descrição
+                } catch (e) {
+                    console.error(`Erro ao ler info.txt de ${folder}:`, e);
+                }
             }
 
             const gameUrl = `${CLOUDFRONT_BASE}/todas/${folder}/index.html`;
@@ -122,37 +155,39 @@ async function main() {
 
             validGameUrls.push(gameUrl);
 
-            // Upsert no Banco
-            // Vamos tentar achar pelo gameUrl (único) ou title (se extrairmos do info.txt)
-            // Por simplificação, vamos assumir que o título é o nome da pasta formatado se não existir,
-            // mas idealmente atualizamos o item existente que bata com a URL.
-
-            // Tenta buscar item existente pela URL (mais seguro que ID)
+            // Tenta buscar item existente pela URL
             const existing = await prisma.item.findFirst({
                 where: { gameUrl: gameUrl }
             });
 
             if (existing) {
-                if (imageUrl && existing.imageUrl !== imageUrl) {
+                // Atualizar se houver mudanças significativas
+                if (imageUrl && (existing.imageUrl !== imageUrl || existing.title === folder.replace(/_/g, ' '))) {
                     await prisma.item.update({
                         where: { id: existing.id },
-                        data: { imageUrl: imageUrl }
+                        data: {
+                            imageUrl: imageUrl,
+                            title: title,
+                            subject: subject,
+                            year: year,
+                            description: description
+                        }
                     });
                     updated++;
                 }
             } else {
-                // Criar novo se não existe (Recuperação total)
+                // Criar novo se não existe
                 await prisma.item.create({
                     data: {
-                        title: folder.replace(/_/g, ' '), // Nome provisório
+                        title: title,
                         gameUrl: gameUrl,
                         imageUrl: imageUrl,
-                        description: 'Recuperado do S3',
-                        subject: 'Geral',
-                        year: 'Geral'
+                        description: description,
+                        subject: subject,
+                        year: year
                     }
                 });
-                console.log(`➕ Novo jogo encontrado e adicionado: ${folder}`);
+                console.log(`➕ Novo jogo encontrado e adicionado com sucesso: ${title}`);
             }
         }));
 

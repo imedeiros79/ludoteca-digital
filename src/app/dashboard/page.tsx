@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { Gamepad2, ChevronLeft, ChevronRight, ArrowRight, Settings, LayoutDashboard, MessageCircle } from 'lucide-react';
+import { Gamepad2, ChevronLeft, ChevronRight, ArrowRight, Settings, LayoutDashboard, Heart, CalendarDays, BookOpen } from 'lucide-react';
 import SearchInput from '@/components/SearchInput';
 import { SignOutButton } from '@/components/SignOutButton';
 import Filters from '@/components/Filters';
 import GameCard from '@/components/GameCard';
 import prisma from '@/lib/prisma';
 import { createClient } from '@/utils/supabase/server';
+import { getUserFavoriteIds } from '@/app/dashboard/favorites-actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,10 +97,11 @@ export default async function Dashboard({
     let games: any[] = [];
     let totalCount = 0;
     let validSubjects: string[] = [];
+    let favoriteIds: string[] = [];
 
     try {
         console.log('[Dashboard] Buscando jogos e contagem...');
-        const [gamesRes, countRes, allSubjects] = await Promise.all([
+        const [gamesRes, countRes, allSubjects, favIds] = await Promise.all([
             prisma.item.findMany({
                 where: whereCondition,
                 take: isVIP ? itemsPerPage : 3,
@@ -111,7 +113,8 @@ export default async function Dashboard({
                 select: { subject: true },
                 distinct: ['subject'],
                 orderBy: { subject: 'asc' }
-            })
+            }),
+            isVIP ? getUserFavoriteIds() : Promise.resolve([]),
         ]);
 
         games = gamesRes;
@@ -119,6 +122,7 @@ export default async function Dashboard({
         validSubjects = allSubjects
             .map(i => i.subject)
             .filter((s): s is string => !!s && s.length > 0);
+        favoriteIds = favIds;
 
         console.log(`[Dashboard] Busca concluída. Jogos: ${games.length}, VIP: ${isVIP}`);
     } catch (error: any) {
@@ -165,12 +169,28 @@ export default async function Dashboard({
                         <span className="hidden sm:inline">Ludoteca Digital</span>
                     </div>
 
-                    {/* Admin Shortcut */}
-                    {dbUser?.email === 'imedeiros@outlook.com' && (
-                        <Link href="/admin" className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-bold hover:bg-black transition-colors">
-                            <LayoutDashboard size={14} /> PAINEL ADM
+                    {/* Nav Links */}
+                    <div className="hidden md:flex items-center gap-1">
+                        <Link href="/dashboard" className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm font-bold border border-purple-100">
+                            <BookOpen size={15} /> Acervo
                         </Link>
-                    )}
+                        {isVIP && (
+                            <>
+                                <Link href="/dashboard/favoritos" className="flex items-center gap-2 px-3 py-1.5 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                                    <Heart size={15} /> Favoritos
+                                </Link>
+                                <Link href="/dashboard/planejamento" className="flex items-center gap-2 px-3 py-1.5 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                                    <CalendarDays size={15} /> Planejamento
+                                </Link>
+                            </>
+                        )}
+                        {/* Admin Shortcut */}
+                        {dbUser?.email === 'imedeiros@outlook.com' && (
+                            <Link href="/admin" className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-bold hover:bg-black transition-colors">
+                                <LayoutDashboard size={14} /> PAINEL ADM
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -218,6 +238,7 @@ export default async function Dashboard({
                             subject={game.subject}
                             year={game.year}
                             description={game.description}
+                            isFavorite={isVIP ? favoriteIds.includes(game.id) : undefined}
                         />
                     ))}
 

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Gamepad2 } from 'lucide-react';
 import { useState } from 'react';
+import FavoriteButton from '@/components/FavoriteButton';
 
 interface GameCardProps {
     id: string;
@@ -11,9 +12,10 @@ interface GameCardProps {
     subject: string | null;
     year: string | null;
     description: string | null;
+    isFavorite?: boolean;
 }
 
-export default function GameCard({ id, title, imageUrl, subject, year, description }: GameCardProps) {
+export default function GameCard({ id, title, imageUrl, subject, year, description, isFavorite }: GameCardProps) {
     const imgSrc = imageUrl ? imageUrl.replace('https://dmrafr2igetxh.cloudfront.net', '/content') : null;
     const [imgError, setImgError] = useState(false);
 
@@ -39,6 +41,9 @@ export default function GameCard({ id, title, imageUrl, subject, year, descripti
                     <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm max-w-[80%] truncate">
                         {subject || 'Geral'}
                     </div>
+                    {isFavorite !== undefined && (
+                        <FavoriteButton itemId={id} initialIsFavorite={isFavorite} />
+                    )}
                 </div>
                 <div className="p-4 flex-1 flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors line-clamp-2">
