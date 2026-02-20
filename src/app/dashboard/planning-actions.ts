@@ -117,8 +117,28 @@ export async function getSubjectsWithCount() {
         .map(s => ({ name: s.subject as string, count: s._count.id }));
 }
 
-export async function getItemsBySubject(subject: string, query?: string) {
-    const where: any = { subject };
+export async function getYearsBySubject(subject: string) {
+    const rows = await prisma.item.findMany({
+        where: { subject, year: { not: null } },
+        select: { year: true },
+        distinct: ['year'],
+        orderBy: { year: 'asc' },
+    });
+    // Normaliza e ordena pelo número inicial do ano escolar
+    const years = rows
+        .map(r => r.year as string)
+        .filter(Boolean)
+        .sort((a, b) => {
+            const numA = parseInt(a.match(/\d+/)?.[0] ?? '99');
+            const numB = parseInt(b.match(/\d+/)?.[0] ?? '99');
+            return numA - numB;
+        });
+    return years;
+}
+
+export async function getItemsBySubject(subject: string, year?: string, query?: string) {
+    const where: Record<string, unknown> = { subject };
+    if (year) where.year = year;
     if (query && query.length >= 2) {
         where.title = { contains: query, mode: 'insensitive' };
     }
@@ -126,8 +146,9 @@ export async function getItemsBySubject(subject: string, query?: string) {
         where,
         select: { id: true, title: true, subject: true, year: true, imageUrl: true },
         orderBy: { title: 'asc' },
-        take: 24,
+        take: 30,
     });
     return items;
 }
+
 
