@@ -97,6 +97,7 @@ export async function searchItemsForPlan(query: string) {
             OR: [
                 { title: { contains: query, mode: 'insensitive' } },
                 { subject: { contains: query, mode: 'insensitive' } },
+                { bncc: { contains: query, mode: 'insensitive' } },
             ],
         },
         select: { id: true, title: true, subject: true, year: true, imageUrl: true },
@@ -152,7 +153,10 @@ export async function getItemsBySubject(subject: string, year?: string, query?: 
     const where: Record<string, unknown> = { subject };
     if (year) where.year = { contains: year, mode: 'insensitive' };
     if (query && query.length >= 2) {
-        where.title = { contains: query, mode: 'insensitive' };
+        where.OR = [
+            { title: { contains: query, mode: 'insensitive' } },
+            { bncc: { contains: query, mode: 'insensitive' } },
+        ];
     }
     const items = await prisma.item.findMany({
         where,

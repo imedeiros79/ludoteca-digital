@@ -85,6 +85,7 @@ export default async function Dashboard({
                 OR: [
                     { title: { contains: query, mode: 'insensitive' } },
                     { description: { contains: query, mode: 'insensitive' } },
+                    { bncc: { contains: query, mode: 'insensitive' } },
                 ]
             } : {},
             // Filters
