@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Gamepad2, GraduationCap, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import FavoriteButton from '@/components/FavoriteButton';
-import { simplifyYear, getSubjectColor } from '@/utils/formatters';
+import { simplifyYear, cleanDescription, getSubjectColor } from '@/utils/formatters';
 
 interface GameCardProps {
     id: string;
@@ -22,6 +22,7 @@ export default function GameCard({ id, title, imageUrl, subject, year, descripti
 
     // Formatação amigável
     const shortYear = simplifyYear(year);
+    const cleanDesc = cleanDescription(description);
     const badgeStyle = getSubjectColor(subject);
 
     return (
@@ -75,8 +76,8 @@ export default function GameCard({ id, title, imageUrl, subject, year, descripti
                         {title}
                     </h3>
 
-                    <p className="text-sm text-gray-500 line-clamp-3 leading-relaxed mb-4">
-                        {description || 'Explore este recurso pedagógico interativo para engajar seus alunos.'}
+                    <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed mb-4">
+                        {cleanDesc}
                     </p>
 
                     {/* Bottom Action */}

@@ -7,6 +7,7 @@ import GameCard from '@/components/GameCard';
 import prisma from '@/lib/prisma';
 import { createClient } from '@/utils/supabase/server';
 import { getUserFavoriteIds } from '@/app/dashboard/favorites-actions';
+import { getYearSortWeight } from '@/utils/formatters';
 
 export const dynamic = 'force-dynamic';
 
@@ -107,7 +108,7 @@ export default async function Dashboard({
                 where: whereCondition,
                 take: isVIP ? itemsPerPage : 3,
                 skip: skip,
-                orderBy: { createdAt: 'desc' },
+                orderBy: [{ year: 'asc' }, { title: 'asc' }],
             }),
             prisma.item.count({ where: whereCondition }),
             prisma.item.findMany({
@@ -118,7 +119,12 @@ export default async function Dashboard({
             isVIP ? getUserFavoriteIds() : Promise.resolve([]),
         ]);
 
-        games = gamesRes;
+        games = gamesRes.sort((a: any, b: any) => {
+            const wa = getYearSortWeight(a.year);
+            const wb = getYearSortWeight(b.year);
+            if (wa !== wb) return wa - wb;
+            return (a.title || '').localeCompare(b.title || '', 'pt-BR');
+        });
         totalCount = isVIP ? countRes : Math.min(countRes, 3);
         validSubjects = allSubjects
             .map(i => i.subject)
