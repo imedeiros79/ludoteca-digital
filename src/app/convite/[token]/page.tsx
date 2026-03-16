@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Gamepad2, Loader2, Mail, Lock, User, ArrowRight } from 'lucide-react';
-import { validateInviteToken, signUpTeacher } from '../actions';
+import { validateInviteToken, signUpTeacher } from '@/app/dashboard/escola/actions';
 import Link from 'next/link';
 
 export default function InvitePage({ params }: { params: { token: string } }) {
