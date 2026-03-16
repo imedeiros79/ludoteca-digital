@@ -102,8 +102,38 @@ export async function toggleUserVIP(userId: string, currentStatus: string) {
 export async function deleteUser(userId: string) {
     await checkAdmin();
 
-    // Opcional: Se quiser remover do Supabase Auth também, precisaria do Admin Client.
-    // Por enquanto, removemos apenas do nosso BD para sumir do painel.
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { organization: true }
+    });
+
+    if (!user) return;
+
+    // Se for GESTOR, precisamos limpar a escola e os professores vinculados
+    if (user.role === 'MANAGER') {
+        const org = await prisma.organization.findUnique({
+            where: { managerId: userId }
+        });
+
+        if (org) {
+            // 1. Tornar todos os professores da escola individuais e inativos
+            await prisma.user.updateMany({
+                where: { organizationId: org.id },
+                data: {
+                    organizationId: null,
+                    role: 'INDIVIDUAL',
+                    subscriptionStatus: 'inactive'
+                }
+            });
+
+            // 2. Deletar a organização
+            await prisma.organization.delete({
+                where: { id: org.id }
+            });
+        }
+    }
+
+    // 3. Deletar o usuário principal
     await prisma.user.delete({
         where: { id: userId }
     });
