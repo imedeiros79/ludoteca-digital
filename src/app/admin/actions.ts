@@ -12,6 +12,20 @@ async function checkAdmin() {
     if (user?.email !== 'imedeiros@outlook.com') {
         throw new Error('Não autorizado');
     }
+
+    // Auto-reparo: Garantir que o Admin existe no Banco de Dados Novo (Neon)
+    await prisma.user.upsert({
+        where: { email: user.email },
+        update: { role: 'ADMIN', subscriptionStatus: 'active' },
+        create: {
+            id: user.id,
+            email: user.email,
+            name: 'Administrador',
+            role: 'ADMIN',
+            subscriptionStatus: 'active'
+        }
+    });
+
     return user;
 }
 
