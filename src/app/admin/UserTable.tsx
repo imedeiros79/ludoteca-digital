@@ -5,7 +5,7 @@ import {
     Search, ShieldCheck, UserMinus, UserCheck, Trash2,
     Calendar, Mail, Fingerprint, Key
 } from 'lucide-react';
-import { toggleUserVIP, deleteUser, resetUserPassword } from './actions';
+import { toggleUserVIP, deleteUser, resetUserPassword, promoteToManager } from './actions';
 
 interface User {
     id: string;
@@ -14,6 +14,9 @@ interface User {
     subscriptionStatus: string | null;
     cpfCnpj: string | null;
     phone: string | null;
+    role: string;
+    organizationId: string | null;
+    organization?: { name: string } | null;
     createdAt: Date;
 }
 
@@ -72,8 +75,8 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                         <tr className="text-gray-400 text-[10px] uppercase tracking-[0.2em] font-black border-b border-gray-50">
                             <th className="px-10 py-6 text-center w-16">#</th>
                             <th className="px-10 py-6">Identificação e Contato</th>
-                            <th className="px-10 py-6">Documento (CPF)</th>
                             <th className="px-10 py-6 text-center">Status VIP</th>
+                            <th className="px-10 py-6 text-center">Papel</th>
                             <th className="px-10 py-6">Data Cadastro</th>
                             <th className="px-10 py-6 text-right">Ações</th>
                         </tr>
@@ -114,12 +117,19 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                                         </div>
                                     </td>
                                     <td className="px-10 py-6 text-center">
-                                        <span className={`inline-flex px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${user.subscriptionStatus === 'active'
-                                            ? 'bg-emerald-100 text-emerald-700'
-                                            : 'bg-gray-100 text-gray-500'
+                                        <span className={`inline-flex px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${user.role === 'MANAGER'
+                                            ? 'bg-purple-100 text-purple-700'
+                                            : user.role === 'TEACHER'
+                                                ? 'bg-indigo-100 text-indigo-700'
+                                                : 'bg-gray-100 text-gray-500'
                                             }`}>
-                                            {user.subscriptionStatus === 'active' ? 'Diamante ✨' : 'Standard'}
+                                            {user.role}
                                         </span>
+                                        {user.organization && (
+                                            <div className="text-[10px] text-purple-400 font-bold mt-1 max-w-[120px] truncate">
+                                                {user.organization.name}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-10 py-6 text-sm text-gray-500 font-medium whitespace-nowrap">
                                         <div className="flex items-center gap-2">
@@ -163,6 +173,27 @@ export default function UserTable({ initialUsers }: { initialUsers: User[] }) {
                                             >
                                                 <Key size={18} />
                                             </button>
+
+                                            {/* Promote to Manager */}
+                                            {user.role === 'INDIVIDUAL' && (
+                                                <button
+                                                    onClick={async () => {
+                                                        const name = prompt('Nome da Escola:', `Escola de ${user.name || user.email}`);
+                                                        if (name) {
+                                                            const plan = prompt('Plano (Bronze, Prata, Ouro):', 'Bronze');
+                                                            const limit = prompt('Limite de Professores:', '10');
+                                                            if (plan && limit) {
+                                                                await promoteToManager(user.id, name, plan, parseInt(limit));
+                                                                alert('Usuário promovido a GESTOR com sucesso!');
+                                                            }
+                                                        }
+                                                    }}
+                                                    title="Promover a Gestor B2B"
+                                                    className="p-2.5 bg-purple-50 text-purple-600 border border-purple-200 rounded-xl hover:bg-purple-100 transition-all shadow-sm"
+                                                >
+                                                    <Fingerprint size={18} />
+                                                </button>
+                                            )}
 
                                             {/* Delete User */}
                                             <button

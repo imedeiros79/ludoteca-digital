@@ -8,6 +8,13 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum Role {
+  INDIVIDUAL
+  MANAGER
+  TEACHER
+  ADMIN
+}
+
 model User {
   id                 String   @id @default(uuid())
   email              String   @unique
@@ -19,8 +26,25 @@ model User {
   subscriptionStatus String?  @default("inactive")
   cpfCnpj            String?
   phone              String?
+  role               Role     @default(INDIVIDUAL)
+  organizationId     String?
+  organization       Organization? @relation(fields: [organizationId], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+}
+
+model Organization {
+  id            String   @id @default(uuid())
+  name          String
+  planType      String?  // Bronze, Prata, Ouro
+  teacherLimit  Int      @default(0)
+  inviteToken   String   @unique @default(uuid())
+  managerId     String   @unique
+  users         User[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("organizations")
 }
 
 model Item {

@@ -111,7 +111,34 @@ export default async function AdminPage() {
                         </div>
                         <div>
                             <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Jogos no Acervo</div>
-                            <div className="text-3xl font-black text-gray-900">{stats.totalGames}</div>
+                            <div className="text-3xl font-black text-gray-900 leading-none">{stats.totalGames}</div>
+                        </div>
+                    </div>
+
+                    {/* Escolas / Organizations */}
+                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between group hover:border-purple-200 transition-all">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="p-4 bg-purple-50 text-purple-600 rounded-2xl">
+                                <ShieldCheck size={24} />
+                            </div>
+                            <span className="text-[10px] font-black text-purple-600 bg-purple-100 px-2 py-1 rounded-lg">B2B</span>
+                        </div>
+                        <div>
+                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Escolas Ativas</div>
+                            <div className="text-3xl font-black text-gray-900 leading-none">{stats.totalOrgs}</div>
+                        </div>
+                    </div>
+
+                    {/* Professores B2B */}
+                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between group hover:border-indigo-200 transition-all">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl">
+                                <Users size={24} />
+                            </div>
+                        </div>
+                        <div>
+                            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total de Professores</div>
+                            <div className="text-3xl font-black text-gray-900 leading-none">{stats.totalTeachers}</div>
                         </div>
                     </div>
                 </div>

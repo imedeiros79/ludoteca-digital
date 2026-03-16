@@ -10,6 +10,7 @@ export interface AsaasSubscription {
     value: number;
     nextDueDate: string;
     cycle: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUALLY' | 'ANNUALLY';
+    externalReference?: string;
 }
 
 export class AsaasService {

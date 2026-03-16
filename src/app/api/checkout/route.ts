@@ -18,10 +18,23 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Definir valores baseado no priceId (que agora pode ser apenas 'MENSAL' ou 'ANUAL')
-        const isAnnual = priceId === 'ANUAL';
-        const value = isAnnual ? 120.00 : 19.90;
-        const cycle = isAnnual ? 'ANNUALLY' : 'MONTHLY';
+        // Definir valores baseado no priceId
+        let value = 19.90;
+        let cycle: 'MONTHLY' | 'ANNUALLY' = 'MONTHLY';
+
+        if (priceId === 'ANUAL') {
+            value = 120.00;
+            cycle = 'ANNUALLY';
+        } else if (priceId === 'ESCOLA_BRONZE') {
+            value = 1188.00;
+            cycle = 'ANNUALLY';
+        } else if (priceId === 'ESCOLA_PRATA') {
+            value = 2388.00;
+            cycle = 'ANNUALLY';
+        } else if (priceId === 'ESCOLA_OURO') {
+            value = 4788.00;
+            cycle = 'ANNUALLY';
+        }
 
         const asaasService = new AsaasService(); // Instantiate AsaasService
 
@@ -51,6 +64,7 @@ export async function POST(req: Request) {
             value: value,
             nextDueDate: nextDueDate,
             cycle: cycle,
+            externalReference: priceId,
         });
 
         // 3. Salvar o customerId no banco

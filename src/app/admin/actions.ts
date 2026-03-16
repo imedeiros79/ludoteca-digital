@@ -18,10 +18,13 @@ async function checkAdmin() {
 export async function getAdminStats() {
     await checkAdmin();
 
-    const [totalUsers, activeSubs, totalGames] = await Promise.all([
+    const [totalUsers, activeSubs, totalGames, totalOrgs, totalManagers, totalTeachers] = await Promise.all([
         prisma.user.count(),
         prisma.user.count({ where: { subscriptionStatus: 'active' } }),
-        prisma.item.count()
+        prisma.item.count(),
+        prisma.organization.count(),
+        prisma.user.count({ where: { role: 'MANAGER' } }),
+        prisma.user.count({ where: { role: 'TEACHER' } }),
     ]);
 
     // Buscar dados financeiros do Asaas (Métricas reais)
@@ -45,7 +48,10 @@ export async function getAdminStats() {
         activeSubs,
         totalGames,
         totalRevenue,
-        pendingRevenue
+        pendingRevenue,
+        totalOrgs,
+        totalManagers,
+        totalTeachers
     };
 }
 
@@ -56,7 +62,8 @@ export async function getAllUsers(page = 1) {
     return prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
         take: itemsPerPage,
-        skip: (page - 1) * itemsPerPage
+        skip: (page - 1) * itemsPerPage,
+        include: { organization: true }
     });
 }
 
@@ -143,4 +150,38 @@ export async function resetUserPassword(userId: string) {
         console.error('Reset Password Action Error:', error);
         throw new Error(error.message || 'Falha interna ao redefinir senha');
     }
+}
+
+export async function promoteToManager(userId: string, orgName: string, planType: string, teacherLimit: number) {
+    await checkAdmin();
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('Usuário não encontrado');
+
+    const inviteToken = crypto.randomUUID();
+
+    // 1. Criar Organização
+    const org = await prisma.organization.create({
+        data: {
+            name: orgName,
+            planType,
+            teacherLimit,
+            managerId: userId,
+            inviteToken
+        }
+    });
+
+    // 2. Atualizar Usuário
+    await prisma.user.update({
+        where: { id: userId },
+        data: {
+            role: 'MANAGER',
+            organizationId: org.id,
+            subscriptionStatus: 'active' // Ativar VIP automaticamente
+        }
+    });
+
+    revalidatePath('/admin');
+    revalidatePath('/dashboard');
+    return { success: true };
 }

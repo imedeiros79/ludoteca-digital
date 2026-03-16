@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Gamepad2, ChevronLeft, ChevronRight, ArrowRight, Settings, LayoutDashboard, Heart, CalendarDays, BookOpen } from 'lucide-react';
+import { Gamepad2, ChevronLeft, ChevronRight, ArrowRight, Settings, LayoutDashboard, Heart, CalendarDays, BookOpen, School } from 'lucide-react';
 import SearchInput from '@/components/SearchInput';
 import { SignOutButton } from '@/components/SignOutButton';
 import Filters from '@/components/Filters';
@@ -189,6 +189,11 @@ export default async function Dashboard({
                                 <Link href="/dashboard/planejamento" className="flex items-center gap-2 px-3 py-1.5 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
                                     <CalendarDays size={15} /> Planejamento
                                 </Link>
+                                {dbUser?.role === 'MANAGER' && (
+                                    <Link href="/dashboard/escola" className="flex items-center gap-2 px-3 py-1.5 text-purple-600 rounded-lg text-sm font-bold hover:bg-purple-50 transition-colors border border-purple-100">
+                                        <School size={15} /> Minha Escola
+                                    </Link>
+                                )}
                             </>
                         )}
                         {/* Admin Shortcut */}
