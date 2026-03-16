@@ -2,7 +2,10 @@
 
 import prisma from '@/lib/prisma';
 import { createClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/admin';
 import { revalidatePath } from 'next/cache';
+import { Role } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
 import { asaas } from '@/lib/asaas';
 
 async function checkAdmin() {
@@ -108,22 +111,53 @@ export async function deleteUser(userId: string) {
     revalidatePath('/admin');
 }
 
-export async function createUserManually(email: string, name: string, isVip: boolean) {
+export async function createUserManually(email: string, name: string, isVip: boolean, role: Role = 'INDIVIDUAL', planType?: string) {
     await checkAdmin();
 
-    // Upsert no banco local
+    // 1. Criar/Atualizar Usuário
     const user = await prisma.user.upsert({
         where: { email },
         update: {
             name,
+            role,
             subscriptionStatus: isVip ? 'active' : 'inactive'
         },
         create: {
+            id: randomUUID(), // ID temporário, será sobrescrito pelo Auth no login se necessário, mas para Prisma precisamos de um ID
             email,
             name,
+            role,
             subscriptionStatus: isVip ? 'active' : 'inactive'
         }
     });
+
+    // 2. Se for MANAGER, garantir que tem uma Organization
+    if (role === 'MANAGER') {
+        const teacherLimit = planType === 'Bronze' ? 10 : planType === 'Prata' ? 25 : 50;
+        
+        await prisma.organization.upsert({
+            where: { managerId: user.id },
+            update: {
+                name: `Escola de ${name}`,
+                planType: planType || 'Bronze',
+                teacherLimit
+            },
+            create: {
+                name: `Escola de ${name}`,
+                managerId: user.id,
+                planType: planType || 'Bronze',
+                teacherLimit,
+                inviteToken: randomUUID()
+            }
+        });
+        
+        // Vincular user à org
+        const org = await prisma.organization.findUnique({ where: { managerId: user.id } });
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { organizationId: org?.id }
+        });
+    }
 
     revalidatePath('/admin');
     return user;

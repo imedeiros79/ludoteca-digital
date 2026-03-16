@@ -10,15 +10,18 @@ export default function AddUserModal() {
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [isVip, setIsVip] = useState(true);
+    const [role, setRole] = useState<'INDIVIDUAL' | 'MANAGER'>('INDIVIDUAL');
+    const [plan, setPlan] = useState('Bronze');
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         try {
-            await createUserManually(email, name, isVip);
+            await createUserManually(email, name, isVip, role, role === 'MANAGER' ? plan : undefined);
             setIsOpen(false);
             setEmail('');
             setName('');
+            setRole('INDIVIDUAL');
             alert('Usuário criado com sucesso!');
         } catch (error) {
             alert('Erro ao criar usuário: ' + (error as Error).message);
@@ -54,6 +57,23 @@ export default function AddUserModal() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                    <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-2xl mb-4">
+                        <button
+                            type="button"
+                            onClick={() => setRole('INDIVIDUAL')}
+                            className={`py-2 rounded-xl text-xs font-bold transition-all ${role === 'INDIVIDUAL' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500'}`}
+                        >
+                            Professor (VIP)
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setRole('MANAGER')}
+                            className={`py-2 rounded-xl text-xs font-bold transition-all ${role === 'MANAGER' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500'}`}
+                        >
+                            Escola (B2B)
+                        </button>
+                    </div>
+
                     <div>
                         <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Nome Completo</label>
                         <input
@@ -62,7 +82,7 @@ export default function AddUserModal() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
-                            placeholder="Ex: João Silva"
+                            placeholder={role === 'MANAGER' ? "Ex: Escola Machado de Assis" : "Ex: João Silva"}
                         />
                     </div>
 
@@ -78,6 +98,21 @@ export default function AddUserModal() {
                         />
                     </div>
 
+                    {role === 'MANAGER' && (
+                        <div>
+                            <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Plano da Escola</label>
+                            <select
+                                value={plan}
+                                onChange={(e) => setPlan(e.target.value)}
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-bold text-gray-700"
+                            >
+                                <option value="Bronze">Plano Bronze (10 Profs)</option>
+                                <option value="Prata">Plano Prata (25 Profs)</option>
+                                <option value="Ouro">Plano Ouro (50 Profs)</option>
+                            </select>
+                        </div>
+                    )}
+
                     <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-2xl border border-purple-100">
                         <input
                             type="checkbox"
@@ -87,7 +122,7 @@ export default function AddUserModal() {
                             className="w-5 h-5 accent-purple-600"
                         />
                         <label htmlFor="isVip" className="text-sm font-bold text-purple-900 cursor-pointer">
-                            Ativar Acesso VIP imediatamente?
+                            Ativar Acesso imediatamente?
                         </label>
                     </div>
 
